@@ -1,0 +1,66 @@
+{
+  "name": "Product-Outcomes Development",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": "."
+  },
+  "features": {
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {
+      "version": "latest",
+      "moby": true
+    }
+  },
+  "forwardPorts": [3000, 4200],
+  "postCreateCommand": "npm install && npm run setup:validate",
+  "postStartCommand": "git config --global --add safe.directory ${containerWorkspaceFolder}",
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "cucumberautocomplete.steps": ["features/step-definitions/*.ts"],
+        "cucumberautocomplete.strictGherkinCompletion": true,
+        "editor.indentSize": "tabSize",
+        "editor.tabSize": 2,
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "eslint.validate": [
+          "javascript",
+          "javascriptreact",
+          "typescript",
+          "typescriptreact"
+        ],
+        "files.autoSave": "onFocusChange",
+        "typescript.updateImportsOnFileMove.enabled": "always",
+        "typescript.preferences.importModuleSpecifier": "relative",
+        "editor.codeActionsOnSave": {
+          "source.fixAll.eslint": "explicit"
+        }
+      },
+      "extensions": [
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "CucumberOpen.cucumber-official",
+        "dsznajder.es7-react-js-snippets",
+        "vscodeshift.material-ui-snippets",
+        "ms-playwright.playwright",
+        "eamodio.gitlens",
+        "usernamehw.errorlens",
+        "anthropics.claude-code",
+        "streetsidesoftware.code-spell-checker",
+        "oderwat.indent-rainbow",
+        "2gua.rainbow-brackets",
+        "christian-kohler.path-intellisense",
+        "formulahendry.auto-rename-tag",
+        "bradlc.vscode-tailwindcss"
+      ]
+    }
+  },
+  "mounts": [
+    "source=${localWorkspaceFolder}/.npm,target=/home/node/.npm,type=bind,consistency=cached"
+  ],
+  "remoteUser": "node",
+  "containerEnv": {
+    "NODE_ENV": "development",
+    "CI": "false",
+    "PLAYWRIGHT_HTML_OPEN": "never"
+  }
+}

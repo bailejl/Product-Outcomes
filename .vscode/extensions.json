@@ -1,0 +1,19 @@
+{
+  "recommendations": [
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode",
+    "CucumberOpen.cucumber-official",
+    "dsznajder.es7-react-js-snippets",
+    "vscodeshift.material-ui-snippets",
+    "ms-playwright.playwright",
+    "eamodio.gitlens",
+    "usernamehw.errorlens",
+    "anthropics.claude-code",
+    "streetsidesoftware.code-spell-checker",
+    "oderwat.indent-rainbow",
+    "2gua.rainbow-brackets",
+    "christian-kohler.path-intellisense",
+    "formulahendry.auto-rename-tag"
+  ],
+  "unwantedRecommendations": []
+}
