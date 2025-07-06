@@ -72,8 +72,6 @@ ENV NPM_CONFIG_CACHE=/home/node/.npm
 ENV GITHUB_OWNER=bailejl
 ENV GITHUB_REPO=Product-Outcomes
 
-ENV CLAUDE_SWARM_ID="swarm-$(date +%s)"
-
 RUN alias swarm-status="/github status"
 RUN alias swarm-tasks="/github tasks"
 RUN alias swarm-claim="/github claim"
@@ -84,6 +82,13 @@ RUN npx playwright install chromium firefox webkit
 
 # Set the default shell to bash
 SHELL ["/bin/bash", "-c"]
+
+# ENV CLAUDE_SWARM_ID="swarm-$(date +%s)"
+ENV CLAUDE_SWARM_ID="product-outcomes-swarm-01"
+
+RUN echo "echo GITHUB_OWNER: \$(echo \$GITHUB_OWNER)" >> ~/.profile
+RUN echo "echo GITHUB_REPO: \$(echo \$GITHUB_REPO)" >> ~/.profile
+RUN echo "echo CLAUDE_SWARM_ID: \$(echo \$CLAUDE_SWARM_ID)" >> ~/.profile
 
 # Set working directory
 WORKDIR /workspace
