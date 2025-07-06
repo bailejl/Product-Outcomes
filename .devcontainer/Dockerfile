@@ -1,7 +1,10 @@
 FROM node:20-bookworm-slim
 
+# Set shell with pipefail for better error handling
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+
 # Install essential tools and Playwright dependencies
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && apt-get install -y --no-install-recommends \
   git \
   curl \
   wget \
@@ -45,7 +48,7 @@ RUN curl -fsSL https://deno.land/install.sh | sh \
 # Install GitHub CLI
 RUN curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | tee /usr/share/keyrings/githubcli-archive-keyring.gpg > /dev/null \
   && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | tee /etc/apt/sources.list.d/github-cli.list > /dev/null \
-  && apt-get update && apt-get install gh -y \
+  && apt-get update && apt-get install -y --no-install-recommends gh \
   && rm -rf /var/lib/apt/lists/*
 
 # Configure the existing node user for development
@@ -54,7 +57,7 @@ RUN usermod -s /bin/bash node \
   && chmod 0440 /etc/sudoers.d/node
 
 # Install global npm packages
-RUN npm install -g npm@latest ruv-swarm@latest @anthropic-ai/claude-code
+RUN npm install -g npm@11.4.2 ruv-swarm@1.0.14 @anthropic-ai/claude-code@1.0.43
 
 RUN mkdir /usr/local/lib/node_modules/ruv-swarm/data \
   && chown -R node:node /usr/local/lib/node_modules/ruv-swarm/data
@@ -72,23 +75,20 @@ ENV NPM_CONFIG_CACHE=/home/node/.npm
 ENV GITHUB_OWNER=bailejl
 ENV GITHUB_REPO=Product-Outcomes
 
-RUN alias swarm-status="/github status"
-RUN alias swarm-tasks="/github tasks"
-RUN alias swarm-claim="/github claim"
-RUN alias swarm-update="/github update"
+# Set up aliases and environment info in profile
+RUN alias swarm-status="/github status" \
+  && alias swarm-tasks="/github tasks" \
+  && alias swarm-claim="/github claim" \
+  && alias swarm-update="/github update" \
+  && echo "echo GITHUB_OWNER: \$(echo \$GITHUB_OWNER)" >> ~/.profile \
+  && echo "echo GITHUB_REPO: \$(echo \$GITHUB_REPO)" >> ~/.profile \
+  && echo "echo CLAUDE_SWARM_ID: \$(echo \$CLAUDE_SWARM_ID)" >> ~/.profile
 
 # Pre-install Playwright browsers as the node user
 RUN npx playwright install chromium firefox webkit
 
-# Set the default shell to bash
-SHELL ["/bin/bash", "-c"]
-
 # ENV CLAUDE_SWARM_ID="swarm-$(date +%s)"
 ENV CLAUDE_SWARM_ID="product-outcomes-swarm-01"
-
-RUN echo "echo GITHUB_OWNER: \$(echo \$GITHUB_OWNER)" >> ~/.profile
-RUN echo "echo GITHUB_REPO: \$(echo \$GITHUB_REPO)" >> ~/.profile
-RUN echo "echo CLAUDE_SWARM_ID: \$(echo \$CLAUDE_SWARM_ID)" >> ~/.profile
 
 # Set working directory
 WORKDIR /workspace
