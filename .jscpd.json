@@ -1,0 +1,26 @@
+{
+  "threshold": 0,
+  "reporters": ["html", "markdown"],
+  "ignore": [
+    "**/node_modules/**",
+    "**/.git/**",
+    "**/.rbenv/**",
+    "**/.venv/**",
+    "**/*cache*/**",
+    "**/.github/**",
+    "**/.idea/**",
+    "**/report/**",
+    "**/*.svg",
+    ".vscode",
+    "megalinter",
+    "package-lock.json",
+    "report",
+    "tmp",
+    "playwright-report",
+    "test-results",
+    ".features-gen",
+    ".tmp",
+    "coverage",
+    ".claude"
+  ]
+}

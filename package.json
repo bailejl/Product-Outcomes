@@ -15,6 +15,7 @@
   "type": "commonjs",
   "main": "index.js",
   "scripts": {
-    "test": "test"
+    "test": "echo",
+    "lint:mega": "npx mega-linter-runner --flavor javascript"
   }
 }
