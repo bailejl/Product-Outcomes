@@ -63,3 +63,8 @@ megalinter-reports/
 .claude/settings.local.json
 
 /logs
+
+# for Claude Flow
+/swarm-auto-centralized-*
+/memory
+/reports
