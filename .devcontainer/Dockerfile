@@ -41,8 +41,15 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   && rm -rf /var/lib/apt/lists/*
 
 # Install Deno (required for claude-flow)
-RUN curl -fsSL https://deno.land/install.sh | sh \
-  && mv /root/.deno/bin/deno /usr/local/bin/deno \
+# Using a more robust installation method with proper error handling
+RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates \
+  && rm -rf /var/lib/apt/lists/* \
+  && export DENO_INSTALL="/usr/local" \
+  && curl -fsSL https://deno.land/install.sh | sh -s v1.46.3 \
+  || (echo "Deno installation failed, trying alternative method..." \
+    && wget -qO- https://github.com/denoland/deno/releases/latest/download/deno-x86_64-unknown-linux-gnu.zip -O /tmp/deno.zip \
+    && unzip -q /tmp/deno.zip -d /usr/local/bin/ \
+    && rm /tmp/deno.zip) \
   && chmod +x /usr/local/bin/deno
 
 # Install GitHub CLI
@@ -57,10 +64,7 @@ RUN usermod -s /bin/bash node \
   && chmod 0440 /etc/sudoers.d/node
 
 # Install global npm packages
-RUN npm install -g npm@11.4.2 ruv-swarm@1.0.14 @anthropic-ai/claude-code@1.0.43
-
-RUN mkdir /usr/local/lib/node_modules/ruv-swarm/data \
-  && chown -R node:node /usr/local/lib/node_modules/ruv-swarm/data
+RUN npm install -g claude-flow@1.0.72 @anthropic-ai/claude-code@1.0.43
 
 # Create directories for Playwright
 RUN mkdir -p /home/node/.cache/ms-playwright \
