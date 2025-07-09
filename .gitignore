@@ -68,3 +68,5 @@ megalinter-reports/
 /swarm-auto-centralized-*
 /memory
 /reports
+
+/.env
