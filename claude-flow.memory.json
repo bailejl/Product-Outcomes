@@ -1,0 +1,16 @@
+{
+  "collectiveMemory": {
+    "backend": "enhanced-sqlite",
+    "encryption": true,
+    "compression": "intelligent",
+    "indexing": "neural-semantic",
+    "retention": {
+      "critical": "permanent",
+      "important": "1year",
+      "routine": "3months"
+    },
+    "crossSessionLearning": true,
+    "patternRecognition": true,
+    "knowledgeGraph": true
+  }
+}

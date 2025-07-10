@@ -64,7 +64,7 @@ RUN usermod -s /bin/bash node \
   && chmod 0440 /etc/sudoers.d/node
 
 # Install global npm packages
-RUN npm install -g claude-flow@1.0.72 @anthropic-ai/claude-code@1.0.43
+RUN npm install -g claude-flow@2.0.0-alpha.38 @anthropic-ai/claude-code@1.0.43
 
 # Create directories for Playwright
 RUN mkdir -p /home/node/.cache/ms-playwright \
