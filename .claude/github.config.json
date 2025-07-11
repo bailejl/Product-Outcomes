@@ -1,0 +1,29 @@
+{
+  "authentication": {
+    "type": "token",
+    "tokenEnvVar": "GITHUB_TOKEN"
+  },
+  "defaults": {
+    "assignReviewers": true,
+    "runTests": true,
+    "updateDocs": true,
+    "generateChangelog": true
+  },
+  "workflows": {
+    "pr": {
+      "requireTests": true,
+      "requireDocs": true,
+      "autoAssignReviewers": 2
+    },
+    "release": {
+      "branches": ["main"],
+      "npmPublish": true,
+      "dockerPush": true,
+      "createGitHubRelease": true
+    }
+  },
+  "templates": {
+    "pr": ".github/pull_request_template.md",
+    "issue": ".github/ISSUE_TEMPLATE/"
+  }
+}

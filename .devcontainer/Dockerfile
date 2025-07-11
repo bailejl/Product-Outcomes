@@ -1,4 +1,4 @@
-FROM node:20-bookworm-slim
+FROM mcr.microsoft.com/vscode/devcontainers/base:ubuntu-22.04
 
 # Set shell with pipefail for better error handling
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
@@ -52,19 +52,26 @@ RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates
     && rm /tmp/deno.zip) \
   && chmod +x /usr/local/bin/deno
 
+# Install Node.js v24
+RUN curl -fsSL https://deb.nodesource.com/setup_24.x | bash - \
+  && apt-get install -y --no-install-recommends nodejs \
+  && rm -rf /var/lib/apt/lists/*
+
 # Install GitHub CLI
 RUN curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | tee /usr/share/keyrings/githubcli-archive-keyring.gpg > /dev/null \
   && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | tee /etc/apt/sources.list.d/github-cli.list > /dev/null \
   && apt-get update && apt-get install -y --no-install-recommends gh \
   && rm -rf /var/lib/apt/lists/*
 
-# Configure the existing node user for development
-RUN usermod -s /bin/bash node \
+# Create node user and configure for development
+# Check if group/user already exist and handle accordingly
+RUN (getent group node || groupadd node) \
+  && (id -u node &>/dev/null || useradd -g node -s /bin/bash -m node) \
   && echo node ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/node \
   && chmod 0440 /etc/sudoers.d/node
 
 # Install global npm packages
-RUN npm install -g claude-flow@2.0.0-alpha.38 @anthropic-ai/claude-code@1.0.43
+RUN npm install -g claude-flow@alpha @anthropic-ai/claude-code@1.0.43
 
 # Create directories for Playwright
 RUN mkdir -p /home/node/.cache/ms-playwright \
