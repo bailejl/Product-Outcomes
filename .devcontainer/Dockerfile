@@ -71,7 +71,7 @@ RUN (getent group node || groupadd node) \
   && chmod 0440 /etc/sudoers.d/node
 
 # Install global npm packages
-RUN npm install -g claude-flow@alpha @anthropic-ai/claude-code@1.0.43
+RUN npm install -g claude-flow@alpha @anthropic-ai/claude-code@latest
 
 # Create directories for Playwright
 RUN mkdir -p /home/node/.cache/ms-playwright \
@@ -86,20 +86,17 @@ ENV NPM_CONFIG_CACHE=/home/node/.npm
 ENV GITHUB_OWNER=bailejl
 ENV GITHUB_REPO=Product-Outcomes
 
-# Set up aliases and environment info in profile
-RUN alias swarm-status="/github status" \
-  && alias swarm-tasks="/github tasks" \
-  && alias swarm-claim="/github claim" \
-  && alias swarm-update="/github update" \
-  && echo "echo GITHUB_OWNER: \$(echo \$GITHUB_OWNER)" >> ~/.profile \
-  && echo "echo GITHUB_REPO: \$(echo \$GITHUB_REPO)" >> ~/.profile \
-  && echo "echo CLAUDE_SWARM_ID: \$(echo \$CLAUDE_SWARM_ID)" >> ~/.profile
+# # Set up aliases and environment info in profile
+# RUN alias swarm-status="/github status" \
+#   && alias swarm-tasks="/github tasks" \
+#   && alias swarm-claim="/github claim" \
+#   && alias swarm-update="/github update" \
+#   && echo "echo GITHUB_OWNER: \$(echo \$GITHUB_OWNER)" >> ~/.profile \
+#   && echo "echo GITHUB_REPO: \$(echo \$GITHUB_REPO)" >> ~/.profile \
+#   && echo "echo CLAUDE_SWARM_ID: \$(echo \$CLAUDE_SWARM_ID)" >> ~/.profile
 
 # Pre-install Playwright browsers as the node user
 RUN npx playwright install chromium firefox webkit
-
-# ENV CLAUDE_SWARM_ID="swarm-$(date +%s)"
-ENV CLAUDE_SWARM_ID="product-outcomes-swarm-01"
 
 # Set working directory
 WORKDIR /workspace
