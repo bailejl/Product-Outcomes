@@ -72,6 +72,4 @@ megalinter-reports/
 /.swarm
 /coordination
 
-/.npm
-
 /.env
