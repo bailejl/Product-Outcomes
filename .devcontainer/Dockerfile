@@ -37,6 +37,28 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   libpango-1.0-0 \
   libcairo2 \
   libasound2 \
+  # Additional GStreamer and multimedia libraries
+  libgstreamer1.0-0 \
+  libgtk-4-1 \
+  libgraphene-1.0-0 \
+  libxslt1.1 \
+  libwoff1 \
+  libvpx7 \
+  libevent-2.1-7 \
+  libopus0 \
+  libgstreamer-plugins-base1.0-0 \
+  libgstreamermm-1.0-1 \
+  libflite1 \
+  libwebpdemux2 \
+  libavif13 \
+  libharfbuzz-icu0 \
+  libwebpmux3 \
+  libenchant-2-2 \
+  libsecret-1-0 \
+  libhyphen0 \
+  libmanette-0.2-0 \
+  libgles2-mesa \
+  libx264-163 \
   # Clean up
   && rm -rf /var/lib/apt/lists/*
 
@@ -71,7 +93,7 @@ RUN (getent group node || groupadd node) \
   && chmod 0440 /etc/sudoers.d/node
 
 # Install global npm packages
-RUN npm install -g claude-flow@alpha @anthropic-ai/claude-code@latest
+# RUN npm install -g claude-flow@alpha @anthropic-ai/claude-code@latest
 
 # Create directories for Playwright
 RUN mkdir -p /home/node/.cache/ms-playwright \
@@ -85,18 +107,6 @@ ENV NPM_CONFIG_CACHE=/home/node/.npm
 
 ENV GITHUB_OWNER=bailejl
 ENV GITHUB_REPO=Product-Outcomes
-
-# # Set up aliases and environment info in profile
-# RUN alias swarm-status="/github status" \
-#   && alias swarm-tasks="/github tasks" \
-#   && alias swarm-claim="/github claim" \
-#   && alias swarm-update="/github update" \
-#   && echo "echo GITHUB_OWNER: \$(echo \$GITHUB_OWNER)" >> ~/.profile \
-#   && echo "echo GITHUB_REPO: \$(echo \$GITHUB_REPO)" >> ~/.profile \
-#   && echo "echo CLAUDE_SWARM_ID: \$(echo \$CLAUDE_SWARM_ID)" >> ~/.profile
-
-# Pre-install Playwright browsers as the node user
-RUN npx playwright install chromium firefox webkit
 
 # Set working directory
 WORKDIR /workspace

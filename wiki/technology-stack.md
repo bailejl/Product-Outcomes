@@ -11,6 +11,7 @@ Product Outcomes is an enterprise-grade, cloud-native application designed to he
 - **Multi-Platform**: Supports mobile, web, and server-side applications
 - **AI-Powered**: Integrated AI assistants for enhanced user experience
 - **Outcome-Focused**: Technology choices align with delivering measurable business results
+- **Monorepo**: Keeping everything together, so changes are atomic, using Nx.
 
 ## Core Platform Components
 
@@ -75,6 +76,7 @@ Product Outcomes is an enterprise-grade, cloud-native application designed to he
   - Playwright for E2E testing
   - Playwright-BDD for BDD testing
   - Jest for unit testing
+- **Build System**: Nx monorepo to control the build and similify the whole app.
 
 ### Build and Deployment
 
