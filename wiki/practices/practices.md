@@ -1,4 +1,4 @@
-# practices.md
+# Practices
 
 This file provides guidance on practices to develop software in this repo.
 
@@ -85,13 +85,18 @@ All commands should be run from the **root directory** (not from subdirectories)
 - `npm run test` - Run all unit tests with Jest
 - `npm run test:watch` - Run tests in watch mode
 
+#### API Testing
+
+- `npm run test:api` - Run all API tests with Playwright
+- `npm run test:api:watch` - Run all API tests with Playwright in watch mode
+
+
 #### E2E Testing
 
 All `npm run e2e` commands automatically start the app for testing, so no need to run `npm run dev` before running the tests.
 
 - `npm run e2e:ci` - Run full E2E test suite without HTML server, exit after all tests run (**RECOMMENDED FOR CI**)
 - `npm run e2e` - Run full E2E test suite with HTML server, does not exit on failures. **IMPORTANT**: never run `npm run e2e` as it does not exit after tests are done, when failures are present.
-- `npm run e2e:demo` - Run full E2E test suite with HTML server, which includes a failing scenario for training, so it will always fail.
 - `npm run e2e:debug` - Run E2E tests with Playwright Inspector for debugging UI issues
 - `npm run e2e:ui` - Run tests with Playwright's UI mode for interactive debugging
 - `npm run snippets` - Generate Cucumber step definition snippets
@@ -111,7 +116,7 @@ All `npm run e2e` commands automatically start the app for testing, so no need t
 
 **IMPORTANT**: This project uses Acceptance Test Driven Development (ATDD) with Playwright-BDD/Playwright. Before implementing any feature:
 
-1. **Read the feature specifications** in `apps/web-e2e/src/features/*.feature` and CRITICAL you read [docs/bdd-and-gherkin-guidance.md](docs/bdd-and-gherkin-guidance.md) to understand the feature files.
+1. **Read the feature specifications** in `*.feature`
 2. **Write Cucumber acceptance tests** that describe the expected behavior in BDD style
 3. **Implement features to satisfy the acceptance tests**
 4. **Validate each test passes** before moving to the next
@@ -123,42 +128,6 @@ The feature file contains comprehensive Gherkin scenarios that define the expect
 **CRITICAL - All development must satisfy the acceptance criteria defined in the feature files.**
 
 ## Architecture
-
-### Technology Stack
-
-- **React 19**: Latest React with modern patterns
-- **TypeScript 5**: Full type safety
-- **Material-UI v6**: UI component library with Emotion styling
-- **React Router v7**: Client-side routing
-- **Vite**: Build tool and development server
-- **Jest**: Unit testing framework
-- **Playwright**: E2E testing framework
-- **Cucumber**: BDD testing with Gherkin syntax
-
-### Core Structure
-
-- **Modern React App**: Simplified single-page application built with Vite
-- **Source Structure**: All application code in `src/` directory
-- **Component Organization**: Feature-based component structure
-- **Modern Build System**: Vite for fast development and optimized production builds
-
-### Directory Structure
-
-```text
-src/
-├── components/          # Feature-organized React components
-│   ├── auth/           # Authentication components (login, private routes)
-│   ├── forms/          # Credit application form components
-│   ├── navigation/     # Header, navigation components
-│   └── shared/         # Shared/reusable components
-├── services/           # Business logic and data services
-├── pages/             # Page-level components
-├── assets/            # Static assets
-├── styles/            # Global styles
-├── hooks/             # Custom React hooks
-├── types/             # TypeScript type definitions
-└── utils/             # Utility functions
-```
 
 ### Test Architecture
 
@@ -201,6 +170,7 @@ This allows tests to be self-documenting and business-readable while referencing
 - **MANDATORY**: Avoid classes - use factory functions and closures instead (code under `features` is acceptable for testing)
 - **MANDATORY**: Markdown formatting rules: use Markdown for documentation, no HTML tags
 - **MANDATORY**: Markdown needs to be markdownlint compliant with the default rules
+- **MANDATORY**: Everything needs to be able to run locally, so it can be validated by the engineer
 - **NO SEMICOLONS** (enforced by Prettier configuration)
 - Single quotes for strings
 - 2-space indentation
@@ -289,7 +259,12 @@ All implementation must:
 
 ## Testing and Debugging
 
+- **CRITICAL**: use Playwright for browser, API, and React Native mobile testing. React Native apps are web apps running in a mobile browser.
+
 ### Acceptance Test Setup
+
+- **CRITICAL**: read `./bdd-and-gherkin-guidance.md` to understand the feature files.
+- **CRITICAL**: read examples of Concise Declarative Gherkin located in `./examples/features` and ensure you understand the data manager.
 
 #### Prerequisites for E2E Testing
 
@@ -299,7 +274,6 @@ All implementation must:
 #### Step File Structure Example
 
 ```javascript
-// features/step-definitions/common.playwright.steps.ts
 import HomePage from '../page-objects/home.playwright.page';
 import LoginPage from '../page-objects/login.playwright.page';
 import { Given } from '../fixtures/test';
@@ -497,4 +471,4 @@ CRITICAL - When installing new package, check to see if there is an ESLint rule 
 
 ### Playwright MCP
 
-Make sure the app is running using `npm run dev`, as needed. This will allow you to access the site via <http://localhost:4200>.
+Make sure the app is running using `npm run dev`, as needed.

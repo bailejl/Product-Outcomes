@@ -22,7 +22,7 @@ Product Outcomes is an enterprise-grade, cloud-native application designed to he
 - **Framework**: Modern JavaScript/TypeScript framework (likely React/Angular/Vue)
 - **Language**: TypeScript (based on devcontainer configuration)
 - **Styling**: TailwindCSS (based on VS Code extension configuration)
-- **Testing**: Playwright for end-to-end testing
+- **Testing**: Playwright with Playwright-BDD for end-to-end testing
 - **Development Tools**: ESLint, Prettier for code quality
 
 #### Mobile Application
@@ -73,10 +73,10 @@ Product Outcomes is an enterprise-grade, cloud-native application designed to he
   - Prettier for formatting
   - Mega-Linter for comprehensive code analysis
 - **Testing Framework**:
-  - Playwright for E2E testing
-  - Playwright-BDD for BDD testing
+  - Playwright with Playwright-BDD for E2E testing
+  - Playwright for API testing
   - Jest for unit testing
-- **Build System**: Nx monorepo to control the build and similify the whole app.
+- **Build System**: Nx monorepo to control the build and simplify the whole app.
 
 ### Build and Deployment
 
@@ -196,9 +196,10 @@ Product Outcomes is an enterprise-grade, cloud-native application designed to he
 
 ### Development Dependencies
 
-- **Playwright**: Latest for E2E testing
+- **Playwright**: Latest for E2E and API testing
 - **Claude Flow**: Alpha version for AI coordination
 - **ESLint**: Code linting
+- **MegaLinter**: Linting of everything else.
 - **Prettier**: Code formatting
 - **GitHub CLI**: Repository management
 
