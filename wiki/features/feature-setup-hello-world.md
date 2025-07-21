@@ -4,11 +4,11 @@ This is a hello world app which has to run across mobile and web. The hello worl
 
 ## Goal
 
-Is to setup up a working end-to-end hello world app in line with the [technology stack](../technology-stack.md). 
+Is to setup up a working end-to-end hello world app in line with the [technology stack](../technology-stack.md).
 
 ## Repo Layout
 
-Need to have an Nx monorepo at the root level of the repo. 
+Need to have an Nx monorepo at the root level of the repo.
 
 ## Development Process
 

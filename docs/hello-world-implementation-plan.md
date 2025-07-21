@@ -7,13 +7,16 @@ This document outlines the implementation plan for a cross-platform Hello World 
 ## Project Overview
 
 ### Goal
+
 Set up a working end-to-end Hello World app aligned with the Product Outcomes technology stack, demonstrating:
+
 - Database connectivity and message retrieval
 - Cross-platform support (web and mobile)
 - Enterprise-grade architecture
 - Complete technology stack integration
 
 ### Key Requirements
+
 1. Display "Hello World" message from database
 2. Support both mobile and web platforms
 3. Use Nx monorepo structure
@@ -25,24 +28,28 @@ Set up a working end-to-end Hello World app aligned with the Product Outcomes te
 ### Core Technologies Required
 
 #### Frontend
+
 - **Web**: React with TypeScript
 - **Mobile**: React Native with TypeScript
 - **Styling**: TailwindCSS
 - **State Management**: Context API or Redux Toolkit
 
 #### Backend
+
 - **Runtime**: Node.js v24
 - **Framework**: Express.js with TypeScript
 - **API**: RESTful endpoints
 - **Database**: PostgreSQL
 
 #### Development Tools
+
 - **Monorepo**: Nx workspace
 - **Testing**: Playwright (browser, API, mobile), Playwright-BDD, Jest
 - **Build**: Vite for web, Metro for React Native
 - **Quality**: ESLint, Prettier, MegaLinter
 
 #### Infrastructure
+
 - **Containerization**: Docker
 - **CI/CD**: GitHub Actions
 - **Cloud Platform**: AWS ECS
@@ -52,6 +59,7 @@ Set up a working end-to-end Hello World app aligned with the Product Outcomes te
 ### Phase 1: Project Setup and Infrastructure (Days 1-2)
 
 #### 1.1 Nx Monorepo Setup (In Existing Repository)
+
 Since we're working in the existing Product-Outcomes repository, we'll initialize Nx in the current directory:
 
 ```bash
@@ -63,6 +71,7 @@ npm install --save-dev @nx/react @nx/node @nx/react-native @nx/vite @nx/eslint @
 ```
 
 #### 1.2 Project Structure (Within Existing Repository)
+
 ```
 Product-Outcomes/
 ├── apps/
@@ -83,6 +92,7 @@ Product-Outcomes/
 ```
 
 #### 1.3 Development Environment
+
 - Configure VS Code devcontainer
 - Set up Docker environment
 - Initialize Git repository
@@ -93,6 +103,7 @@ Product-Outcomes/
 ### Phase 2: Database and Backend Setup (Days 3-4)
 
 #### 2.1 Database Schema
+
 ```sql
 -- migrations/001_create_messages_table.sql
 CREATE TABLE messages (
@@ -104,11 +115,12 @@ CREATE TABLE messages (
 );
 
 -- Insert initial Hello World message
-INSERT INTO messages (key, content) 
+INSERT INTO messages (key, content)
 VALUES ('hello_world', 'Hello World from the Database!');
 ```
 
 #### 2.2 API Development (Functional Programming)
+
 ```typescript
 // apps/api/src/routes/messages.ts
 import express from 'express'
@@ -119,7 +131,10 @@ export const createMessagesRouter = () => {
   const router = express.Router()
 
   // Arrow function for route handler
-  const getHelloWorldMessage = async (req: express.Request, res: express.Response) => {
+  const getHelloWorldMessage = async (
+    req: express.Request,
+    res: express.Response
+  ) => {
     try {
       const result = await pool.query(
         'SELECT content FROM messages WHERE key = $1',
@@ -137,6 +152,7 @@ export const createMessagesRouter = () => {
 ```
 
 #### 2.3 API Testing
+
 - Unit tests with Jest
 - API tests with Playwright
 - Database connection tests
@@ -144,6 +160,7 @@ export const createMessagesRouter = () => {
 ### Phase 3: Web Application Development (Days 5-6)
 
 #### 3.1 React Application Setup
+
 ```bash
 # Generate React web application
 nx g @nx/react:app web --style=css --bundler=vite --e2eTestRunner=playwright
@@ -156,6 +173,7 @@ nx g @nx/js:lib data-access --buildable
 ```
 
 #### 3.2 Hello World Component (Functional Programming)
+
 ```typescript
 // libs/ui/src/lib/hello-world/hello-world.tsx
 import { useEffect, useState } from 'react'
@@ -186,12 +204,22 @@ export const HelloWorld = () => {
     loadMessage()
   }, [])
 
-  if (error) return <div className="error" data-testid="error-message">{error}</div>
-  return <div className="hello-world" data-testid="hello-message">{message}</div>
+  if (error)
+    return (
+      <div className="error" data-testid="error-message">
+        {error}
+      </div>
+    )
+  return (
+    <div className="hello-world" data-testid="hello-message">
+      {message}
+    </div>
+  )
 }
 ```
 
 #### 3.3 Web Testing
+
 - Component unit tests
 - E2E tests with Playwright-BDD
 - Accessibility testing
@@ -199,6 +227,7 @@ export const HelloWorld = () => {
 ### Phase 4: Mobile Application Development (Days 7-8)
 
 #### 4.1 React Native Setup
+
 ```bash
 # Generate React Native mobile application
 nx g @nx/react-native:app mobile --e2eTestRunner=playwright
@@ -208,6 +237,7 @@ nx g @nx/react-native:lib mobile-ui --buildable
 ```
 
 #### 4.2 Mobile Hello World Screen
+
 ```typescript
 // apps/mobile/src/screens/HelloWorldScreen.tsx
 import React, { useEffect, useState } from 'react'
@@ -259,6 +289,7 @@ const styles = StyleSheet.create({
 ```
 
 #### 4.3 Mobile Testing
+
 - Unit tests with Jest
 - E2E tests with Playwright (React Native as web app in mobile browser)
 - Cross-platform testing using Playwright mobile emulation
@@ -266,6 +297,7 @@ const styles = StyleSheet.create({
 ### Phase 5: Integration and Testing (Days 9-10)
 
 #### 5.1 BDD Scenarios (Concise Declarative Gherkin)
+
 ```gherkin
 # features/hello-world.feature
 Feature: Hello World Display
@@ -290,6 +322,7 @@ Feature: Hello World Display
 ```
 
 #### 5.2 Test Data Structure
+
 ```json
 # features/data/data.json
 [
@@ -302,7 +335,7 @@ Feature: Hello World Display
     }
   },
   {
-    "name": "Mobile User", 
+    "name": "Mobile User",
     "aliases": ["Mobile User w/ mobile preferences"],
     "username": "mobile_user",
     "preferences": {
@@ -324,6 +357,7 @@ Feature: Hello World Display
 ```
 
 #### 5.3 Step Definitions (Playwright-BDD)
+
 ```typescript
 // features/step-definitions/hello-world.playwright.steps.ts
 import { expect } from '@playwright/test'
@@ -358,13 +392,14 @@ Given('the database is unavailable', async ({ page }) => {
   await page.route('**/api/messages/hello-world', route => {
     route.fulfill({
       status: 500,
-      body: JSON.stringify({ error: 'Database unavailable' })
+      body: JSON.stringify({ error: 'Database unavailable' }),
     })
   })
 })
 ```
 
 #### 5.4 Page Objects (Playwright Patterns)
+
 ```typescript
 // features/page-objects/hello-world.playwright.page.ts
 import { Page } from '@playwright/test'
@@ -384,12 +419,17 @@ export default class HelloWorldPage extends PlaywrightPage {
   }
 
   getMessage = async (): Promise<string> => {
-    return await this.page.locator('[data-testid="hello-message"]').textContent() || ''
+    return (
+      (await this.page
+        .locator('[data-testid="hello-message"]')
+        .textContent()) || ''
+    )
   }
 }
 ```
 
 #### 5.5 Integration Testing with Playwright
+
 - **Cross-platform API tests**: Use Playwright for API testing with mocking
 - **Web browser tests**: Playwright for web application testing
 - **Mobile tests**: Playwright with mobile browser emulation for React Native
@@ -400,6 +440,7 @@ export default class HelloWorldPage extends PlaywrightPage {
 ### Phase 6: CI/CD and Deployment (Days 11-12)
 
 #### 6.1 GitHub Actions Workflow
+
 ```yaml
 # .github/workflows/ci.yml
 name: CI/CD Pipeline
@@ -435,6 +476,7 @@ jobs:
 ```
 
 #### 6.2 Docker Configuration
+
 ```dockerfile
 # Dockerfile
 FROM node:24-alpine AS builder
@@ -458,6 +500,7 @@ CMD ["node", "dist/apps/api/main.js"]
 
 **MANDATORY WORKFLOW - NO EXCEPTIONS:**
 After EVERY single code change, run from root directory:
+
 ```bash
 # Format code across all projects
 nx run-many --target=format --all
@@ -475,35 +518,41 @@ nx run-many --target=lint --all
 ### Workflow for Each Feature
 
 1. **Read Feature Files First**
+
    - Read `features/*.feature` completely
    - Understand Concise Declarative Gherkin scenarios
    - Reference `bdd-and-gherkin-guidance.md` for context
    - Check existing `features/data/data.json` for test data
 
 2. **Analyze Test Data Requirements**
+
    - Create personas with names and aliases
    - Create data chunks for modifying personas
    - Use Data Manager patterns from examples
    - Keep scenarios business-readable, not technical
 
 3. **Write Step Definitions (Domain-Specific)**
+
    - Create steps specific to Hello World domain
    - Low reuse of steps (per Concise Declarative Gherkin)
    - Use `features/step-definitions/*.playwright.steps.ts`
    - Follow existing patterns from examples
 
 4. **Implement Page Objects**
+
    - Create `features/page-objects/*.playwright.page.ts`
    - Extend base PlaywrightPage class
    - Follow Playwright patterns from examples
 
 5. **Run Tests to See Failures**
+
    - `nx e2e web-e2e --ci` for CI testing
    - `nx e2e web-e2e --headed --debug` for debugging
    - `nx test api --watch` for API tests
    - Implement just enough code to make tests pass
 
 6. **Implement Features (Functional Programming)**
+
    - **MANDATORY**: Use vanilla TypeScript only
    - **MANDATORY**: Use arrow functions exclusively
    - **MANDATORY**: Avoid classes - use factory functions and closures
@@ -513,22 +562,23 @@ nx run-many --target=lint --all
    - Write minimal code to satisfy acceptance tests
 
 7. **Quality Checks (After EVERY Change - NO EXCEPTIONS)**
+
    ```bash
    # ALWAYS format first
    nx run-many --target=format --all
-   
+
    # MUST achieve 90%+ coverage
    nx run-many --target=test --all --coverage
-   
+
    # MUST have zero warnings
    nx run-many --target=lint --all
-   
+
    # MANDATORY MegaLinter scans (global tool)
    npx mega-linter-runner --flavor=javascript
-   
+
    # TypeScript compilation
    nx run-many --target=type-check --all
-   
+
    # Build must succeed
    nx run-many --target=build --all
    ```
@@ -540,9 +590,11 @@ nx run-many --target=lint --all
    - Reference feature file continuously during development
 
 ### Failure Response Protocol
+
 If ANY quality gate fails:
+
 1. **STOP** all other work immediately
-2. **FIX** the failing quality check first  
+2. **FIX** the failing quality check first
 3. **RE-RUN** all test and quality scripts
 4. **ONLY THEN** proceed with next task
 
@@ -563,6 +615,7 @@ All code must pass these checks before proceeding:
 ## Success Criteria
 
 ### Functional Requirements
+
 - [ ] Hello World message retrieved from PostgreSQL database
 - [ ] Message displayed on web application
 - [ ] Message displayed on mobile application (iOS and Android)
@@ -570,6 +623,7 @@ All code must pass these checks before proceeding:
 - [ ] All BDD scenarios pass
 
 ### Technical Requirements
+
 - [ ] Nx monorepo structure implemented in existing repository
 - [ ] All technology stack components integrated
 - [ ] 90%+ test coverage achieved (`nx run-many --target=test --all --coverage`)
@@ -590,6 +644,7 @@ All code must pass these checks before proceeding:
 - [ ] Documentation markdownlint compliant
 
 ### Performance Requirements
+
 - [ ] Web app loads in < 3 seconds
 - [ ] Mobile app launches in < 5 seconds
 - [ ] API response time < 200ms
@@ -598,11 +653,13 @@ All code must pass these checks before proceeding:
 ## Timeline
 
 ### Week 1
+
 - Days 1-2: Project setup and infrastructure
 - Days 3-4: Database and backend development
 - Days 5-6: Web application development
 
 ### Week 2
+
 - Days 7-8: Mobile application development
 - Days 9-10: Integration and testing
 - Days 11-12: CI/CD and deployment
@@ -612,11 +669,14 @@ Total Duration: 12 working days
 ## Risk Mitigation
 
 ### Technical Risks
+
 1. **Cross-platform compatibility issues**
+
    - Mitigation: Use React Native for code sharing
    - Test on multiple devices early
 
 2. **Database connection problems**
+
    - Mitigation: Implement connection pooling
    - Add retry logic and circuit breakers
 
@@ -625,7 +685,9 @@ Total Duration: 12 working days
    - Optimize database queries
 
 ### Process Risks
+
 1. **ATDD learning curve**
+
    - Mitigation: Start with simple scenarios
    - Provide team training
 
@@ -636,11 +698,13 @@ Total Duration: 12 working days
 ## Monitoring and Maintenance
 
 ### Application Monitoring
+
 - Set up error tracking (Sentry)
 - Implement performance monitoring
 - Configure health checks
 
 ### Continuous Improvement
+
 - Regular security updates
 - Performance optimization
 - Feature enhancements based on usage
@@ -650,6 +714,7 @@ Total Duration: 12 working days
 This implementation plan provides a structured approach to building a Hello World application that demonstrates the full Product Outcomes technology stack. By following ATDD methodology and adhering to established practices, we ensure high-quality, maintainable code that serves as a foundation for future development.
 
 The plan emphasizes:
+
 - Incremental development with continuous testing
 - Full technology stack integration
 - Enterprise-grade architecture

@@ -12,6 +12,7 @@ I'm your dedicated System Analyst, specializing in analyzing complex systems to 
 ## Skills & Technology Experience
 
 ### Core Competencies
+
 - **System Architecture & Design Patterns**: Expert in microservices, monolithic, serverless, and hybrid architectures. Proficient with design patterns including MVC, MVVM, Event-Driven, and Domain-Driven Design
 - **Performance Profiling & Optimization**: Skilled in using profiling tools, analyzing bottlenecks, and implementing performance improvements across the stack
 - **Database Query Optimization**: Experience with SQL/NoSQL optimization, indexing strategies, query planning, and database architecture design
@@ -26,21 +27,27 @@ I'm your dedicated System Analyst, specializing in analyzing complex systems to 
 To provide you with the most valuable analysis and recommendations, I work best when you:
 
 ### 1. **Describe Current Pain Points**
+
 Share specific issues you're experiencing:
+
 - Performance degradation under load
 - Scalability concerns
 - Integration challenges
 - Maintenance difficulties
 
 ### 2. **Share Performance Metrics or Requirements**
+
 Provide quantitative data such as:
+
 - Current response times and throughput
 - Target SLAs and performance goals
 - User growth projections
 - Resource utilization metrics
 
 ### 3. **Provide System Documentation**
+
 Access to:
+
 - Architecture diagrams
 - API documentation
 - Database schemas
@@ -48,7 +55,9 @@ Access to:
 - Existing technical specifications
 
 ### 4. **Specify Constraints**
+
 Be clear about:
+
 - Budget limitations
 - Timeline requirements
 - Technology stack restrictions
@@ -56,13 +65,17 @@ Be clear about:
 - Team expertise and resources
 
 ### 5. **Indicate Solution Type**
+
 Let me know if you need:
+
 - **Tactical Fixes**: Quick wins and immediate improvements
 - **Strategic Solutions**: Long-term architectural transformations
 - **Hybrid Approach**: Phased implementation balancing immediate needs with future goals
 
 ### 6. **Data-Driven Objectives**
+
 I work most effectively with:
+
 - Measurable success criteria
 - Specific performance targets
 - Clear business objectives

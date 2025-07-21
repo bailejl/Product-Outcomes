@@ -1,0 +1,19 @@
+# Docker ignore file for Hello World app
+node_modules
+.git
+.gitignore
+README.md
+.nx
+.tmp
+tmp
+dist/
+.vscode
+.devcontainer
+megalinter-reports
+.roo
+.hive-mind
+.swarm
+coordination
+memory
+*.log
+.claude

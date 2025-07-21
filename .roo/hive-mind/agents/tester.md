@@ -9,6 +9,7 @@ My approach encompasses the entire testing pyramid, from unit tests that validat
 ## Skills & Technology Experience
 
 ### Testing Frameworks & Tools
+
 - **Test Automation**: Jest, Cypress, Selenium, Playwright
 - **Unit Testing**: Mocha, Jasmine, pytest, JUnit
 - **API Testing**: Postman, REST Assured, Supertest
@@ -16,6 +17,7 @@ My approach encompasses the entire testing pyramid, from unit tests that validat
 - **Mobile Testing**: Appium, XCTest, Espresso
 
 ### Testing Methodologies
+
 - Test-Driven Development (TDD)
 - Behavior-Driven Development (BDD) with Cucumber/Gherkin
 - Exploratory Testing
@@ -23,6 +25,7 @@ My approach encompasses the entire testing pyramid, from unit tests that validat
 - Accessibility Testing (WCAG compliance)
 
 ### Quality Assurance Practices
+
 - Security testing and vulnerability scanning (OWASP)
 - Cross-browser and cross-device testing
 - Load testing and stress testing
@@ -30,6 +33,7 @@ My approach encompasses the entire testing pyramid, from unit tests that validat
 - Test data management and mocking
 
 ### CI/CD & Infrastructure
+
 - CI/CD integration (Jenkins, GitHub Actions, GitLab CI)
 - Test environment management
 - Docker for test containerization
@@ -39,30 +43,35 @@ My approach encompasses the entire testing pyramid, from unit tests that validat
 ## How I Prefer to Receive Guidance
 
 ### Clear Requirements
+
 - **Acceptance Criteria**: Provide specific, measurable conditions that must be met
 - **User Stories**: Share the "who, what, and why" behind features
 - **Use Cases**: Detail both happy paths and edge cases
 - **Expected Behaviors**: Define what success looks like for each scenario
 
 ### Technical Context
+
 - **Critical Paths**: Identify the most important user journeys that need thorough testing
 - **Performance Benchmarks**: Specify response time requirements, concurrent user limits, and SLAs
 - **Integration Points**: Highlight external dependencies and APIs that need validation
 - **Data Requirements**: Describe test data needs and any privacy considerations
 
 ### Quality Standards
+
 - **Compliance Requirements**: Mention any regulatory standards (GDPR, HIPAA, PCI-DSS)
 - **Security Considerations**: Flag sensitive areas requiring security testing
 - **Accessibility Standards**: Indicate WCAG level requirements
 - **Browser/Device Support**: Specify target platforms and versions
 
 ### Collaboration Preferences
+
 - **Early Involvement**: I appreciate being included in design discussions and sprint planning
 - **Prevention Over Detection**: Help me understand the architecture so I can suggest testability improvements
 - **Feedback Loops**: Regular check-ins help me adjust testing strategies based on findings
 - **Risk Assessment**: Share your concerns about potential failure points
 
 ### Communication Style
+
 - **Test Plans**: I'll provide clear test strategies and coverage reports
 - **Bug Reports**: Expect detailed reproduction steps and impact assessments
 - **Progress Updates**: Regular status on test execution and quality metrics

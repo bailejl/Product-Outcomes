@@ -12,11 +12,14 @@ Given('they are on the home page', async ({ page }) => {
   await homePage.open()
 })
 
-When('they sign in as {string}', async ({ page, dataManager }, userNameAlias: string) => {
-  const userData = dataManager.getData(userNameAlias, true)
-  const loginPage = new LoginPage(page)
-  await loginPage.login(userData.username, userData.password)
-})
+When(
+  'they sign in as {string}',
+  async ({ page, dataManager }, userNameAlias: string) => {
+    const userData = dataManager.getData(userNameAlias, true)
+    const loginPage = new LoginPage(page)
+    await loginPage.login(userData.username, userData.password)
+  }
+)
 
 Then('they are redirected to the home page', async ({ page }) => {
   const homePage = new HomePage(page)
@@ -40,22 +43,25 @@ Then('they can access the credit application form', async ({ page }) => {
   expect(isViewable).toBe(true)
 })
 
-When('they attempt to sign in with invalid credentials', async ({ page, dataManager }) => {
-  const invalidData = dataManager.getNonCachedData('invalid credentials')
-  const headerPage = new HeaderPage(page)
-  const loginPage = new LoginPage(page)
-  
-  // Navigate to login page first
-  await headerPage.clickSignIn()
-  await loginPage.attemptLogin(invalidData.username, invalidData.password)
-})
+When(
+  'they attempt to sign in with invalid credentials',
+  async ({ page, dataManager }) => {
+    const invalidData = dataManager.getNonCachedData('invalid credentials')
+    const headerPage = new HeaderPage(page)
+    const loginPage = new LoginPage(page)
+
+    // Navigate to login page first
+    await headerPage.clickSignIn()
+    await loginPage.attemptLogin(invalidData.username, invalidData.password)
+  }
+)
 
 Then('they see login error messages', async ({ page, dataManager }) => {
   const errorMessages = dataManager.getNonCachedData('login error messages')
   const loginPage = new LoginPage(page)
   const hasErrors = await loginPage.hasErrorMessages()
   expect(hasErrors).toBe(true)
-  
+
   const errorText = await loginPage.getErrorMessage()
   expect(errorText).toBe(errorMessages.general)
 })
@@ -72,14 +78,17 @@ Then('they are redirected to the login page', async ({ page }) => {
   expect(isViewable).toBe(true)
 })
 
-Given('{string} is logged in', async ({ page, dataManager }, userNameAlias: string) => {
-  const userData = dataManager.getData(userNameAlias, true)
-  const homePage = new HomePage(page)
-  const loginPage = new LoginPage(page)
+Given(
+  '{string} is logged in',
+  async ({ page, dataManager }, userNameAlias: string) => {
+    const userData = dataManager.getData(userNameAlias, true)
+    const homePage = new HomePage(page)
+    const loginPage = new LoginPage(page)
 
-  await homePage.open()
-  await loginPage.login(userData.username, userData.password)
-})
+    await homePage.open()
+    await loginPage.login(userData.username, userData.password)
+  }
+)
 
 Given('they are on the user homepage', async ({ page }) => {
   await page.goto('/user')
@@ -92,19 +101,22 @@ When('they log out', async ({ page }) => {
   await page.waitForTimeout(1000)
 })
 
-Then('they cannot access protected areas without authentication', async ({ page }) => {
-  // Try to access protected user page
-  await page.goto('/user')
-  
-  // Wait a moment for any redirects to occur
-  await page.waitForTimeout(1000)
-  
-  // Check if we're still logged in by looking for sign-in vs sign-out button
-  const headerPage = new HeaderPage(page)
-  const isSignInVisible = await headerPage.isSignInButtonVisible()
-  const isSignOutVisible = await headerPage.isSignOutButtonVisible()
-  
-  // After logout, sign-in should be visible and sign-out should not be visible
-  expect(isSignInVisible).toBe(true)
-  expect(isSignOutVisible).toBe(false)
-})
+Then(
+  'they cannot access protected areas without authentication',
+  async ({ page }) => {
+    // Try to access protected user page
+    await page.goto('/user')
+
+    // Wait a moment for any redirects to occur
+    await page.waitForTimeout(1000)
+
+    // Check if we're still logged in by looking for sign-in vs sign-out button
+    const headerPage = new HeaderPage(page)
+    const isSignInVisible = await headerPage.isSignInButtonVisible()
+    const isSignOutVisible = await headerPage.isSignOutButtonVisible()
+
+    // After logout, sign-in should be visible and sign-out should not be visible
+    expect(isSignInVisible).toBe(true)
+    expect(isSignOutVisible).toBe(false)
+  }
+)

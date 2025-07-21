@@ -49,6 +49,7 @@
   "containerEnv": {
     "NODE_ENV": "development",
     "CI": "false",
-    "PLAYWRIGHT_HTML_OPEN": "never"
+    "PLAYWRIGHT_HTML_OPEN": "never",
+    "NX_TUI": "false"
   }
 }

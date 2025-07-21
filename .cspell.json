@@ -24,11 +24,7 @@
   ],
   "language": "en",
   "noConfigSearch": true,
-  "words": [
-    "megalinter",
-    "oxsecurity",
-    "Pendo"
-  ],
+  "words": ["megalinter", "oxsecurity", "Pendo"],
   "version": "0.2",
   "useGitignore": true,
   "ignoreWords": [

@@ -10,5 +10,6 @@
       "icon": "terminal-bash",
       "args": ["-l"]
     }
-  }
+  },
+  "nxConsole.generateAiAgentRules": true
 }

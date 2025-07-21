@@ -5,15 +5,15 @@ This file provides guidance on practices to develop software in this repo.
 ## Table of Contents
 
 1. [🚨 MANDATORY WORKFLOW - NO EXCEPTIONS 🚨](#mandatory-workflow---no-exceptions)
-3. [Commands](#commands)
-4. [Development Approach](#development-approach)
-5. [Architecture](#architecture)
-6. [Technical Constraints](#technical-constraints)
-7. [Security Standards](#security-standards)
-8. [Implementation Process - ATDD Workflow](#implementation-process---atdd-workflow)
-9. [Testing and Debugging](#testing-and-debugging)
-10. [Success Criteria](#success-criteria)
-11. [Important Instruction Reminders](#important-instruction-reminders)
+2. [Commands](#commands)
+3. [Development Approach](#development-approach)
+4. [Architecture](#architecture)
+5. [Technical Constraints](#technical-constraints)
+6. [Security Standards](#security-standards)
+7. [Implementation Process - ATDD Workflow](#implementation-process---atdd-workflow)
+8. [Testing and Debugging](#testing-and-debugging)
+9. [Success Criteria](#success-criteria)
+10. [Important Instruction Reminders](#important-instruction-reminders)
 
 ## MANDATORY WORKFLOW - NO EXCEPTIONS
 
@@ -24,14 +24,20 @@ This file provides guidance on practices to develop software in this repo.
 All commands should be run from the **root directory**:
 
 ```bash
-# 1. ALWAYS ensure code meet formatting standards.
-npm run prettier:write
+# 1. ALWAYS ensure code meets formatting standards.
+npm run format
 
 # 2. ALWAYS run tests first - NO EXCEPTIONS. CRITICAL - Check for warnings in logs and fix them. Ensure we have 90% or better coverage.
 npm run test:coverage
 
 # 3. ALWAYS run quality checks - NO EXCEPTIONS. CRITICAL - treat warnings like errors and fix them.
 npm run lint
+
+# 4. ALWAYS run comprehensive linting - NO EXCEPTIONS. Required for security and quality.
+npm run lint:mega
+
+# 5. ALWAYS run security audit - NO EXCEPTIONS. Required for security compliance.
+npm run audit
 
 ```
 
@@ -45,9 +51,9 @@ npm run lint
 ### Quality Gates - ALL Must Pass
 
 - ✅ **All tests pass**: `npm run test` returns success
-- ✅ **No linting errors or warnings**: `npm run lint`  has no errors or warnings
+- ✅ **No linting errors or warnings**: `npm run lint` and `npm run lint:mega` has no errors or warnings.
 - ✅ **Build succeeds**: `npm run build` completes successfully
-- ✅ **Type checking passes**: `npm run type-check` finds no errors
+- ✅ **Type checking passes**: `npm run typecheck` finds no errors
 - ✅ **Functional patterns**: Code follows functional programming constraints
 - ✅ **No Warnings**: check logs of the Quality Gate processes and ensure there are no logs. CRITICAL - treat warnings like errors.
 
@@ -60,6 +66,10 @@ If ANY quality gate fails:
 3. **RE-RUN** both test and quality scripts
 4. **ONLY THEN** proceed with next task
 
+## Documentation
+
+- **CRITICAL**: all documentation not requested for will be created in `./tmp` to keep the repo clean.
+
 ## Commands
 
 All commands should be run from the **root directory** (not from subdirectories):
@@ -67,9 +77,7 @@ All commands should be run from the **root directory** (not from subdirectories)
 ### Setup Commands
 
 - `npm run setup` - **One-command setup for new developers** (installs dependencies, validates setup, runs all checks)
-- `npm run setup:install` - Install Node.js dependencies and Playwright browsers
-- `npm run setup:validate` - Run type checking, linting, and tests to validate setup
-- `npm run setup:complete` - Display setup completion message
+- `npm run setup` - Complete setup (install dependencies and build all projects)
 
 ### Development Commands
 
@@ -84,22 +92,19 @@ All commands should be run from the **root directory** (not from subdirectories)
 
 - `npm run test` - Run all unit tests with Jest
 - `npm run test:watch` - Run tests in watch mode
+- `npm run test:api:watch` - Run API tests in watch mode
 
 #### API Testing
 
 - `npm run test:api` - Run all API tests with Playwright
 - `npm run test:api:watch` - Run all API tests with Playwright in watch mode
 
-
 #### E2E Testing
 
 All `npm run e2e` commands automatically start the app for testing, so no need to run `npm run dev` before running the tests.
 
-- `npm run e2e:ci` - Run full E2E test suite without HTML server, exit after all tests run (**RECOMMENDED FOR CI**)
-- `npm run e2e` - Run full E2E test suite with HTML server, does not exit on failures. **IMPORTANT**: never run `npm run e2e` as it does not exit after tests are done, when failures are present.
-- `npm run e2e:debug` - Run E2E tests with Playwright Inspector for debugging UI issues
-- `npm run e2e:ui` - Run tests with Playwright's UI mode for interactive debugging
-- `npm run snippets` - Generate Cucumber step definition snippets
+- `npm run e2e` - Run full E2E test suite (**RECOMMENDED FOR CI**)
+- `npm run test:e2e` - Alias for e2e testing
 
 **Note**: Use PLAYWRIGHT_HTML_OPEN=never to stop it showing the HTML report, otherwise the process never ends.
 
@@ -110,7 +115,11 @@ All `npm run e2e` commands automatically start the app for testing, so no need t
 - `npm run lint` - Run linting checks with ESLint
 - `npm run lint:fix` - Fix auto-fixable linting issues
 - `npm run lint:mega` - Run comprehensive MegaLinter security and quality scans. It takes a couple of minutes, so wait for it.
-- `npm run type-check` - Run TypeScript type checking
+- `npm run typecheck` - Run TypeScript type checking
+- `npm run type-check` - Alias for TypeScript type checking
+- `npm run prettier:write` - Format code with Prettier (alias for format)
+- `npm run audit` - Run security audit for dependencies
+- `npm run preview` - Preview production build locally
 
 ## Development Approach
 
@@ -131,19 +140,18 @@ The feature file contains comprehensive Gherkin scenarios that define the expect
 
 ### Test Architecture
 
-- **Feature Files**: Located in `features/*.feature` using Declarative Gherkin syntax
-- **Step Definitions**: Located in `features/step-definitions/`
-- **Page Objects**: Located in `features/page-objects/` following Playwright patterns
-- **Data Management**: Centralized test data in `features/data/data.json`
-- **Unit Tests**: Jest tests co-located with components (`*.spec.tsx`)
+- **Feature Files**: Located in `web-e2e/src/features/*.feature` using Declarative Gherkin syntax
+- **Step Definitions**: Located in `web-e2e/src/features/step-definitions/`
+- **Page Objects**: Located in `web-e2e/src/features/page-objects/` following Playwright patterns
+- **Data Management**: Centralized test data in `web-e2e/src/features/data/data.json`
+- **Unit Tests**: Vitest tests co-located with components (`*.spec.tsx`)
 
 ### Build System
 
 - **Vite**: Modern build tool for fast development and optimized production builds
 - **TypeScript**: Full type checking and compilation
-- **SCSS**: Styling with Sass support
-- **SVG Components**: SVG files imported as React components via vite-plugin-svgr
-- **Path Aliases**: Clean imports using `@components`, `@services`, etc.
+- **CSS Modules**: Component-scoped styling
+- **Nx Monorepo**: Workspace management and build orchestration. **CRITICAL**: read `./nx-guidance.md` before making any changes to Nx files or folders.
 
 ### Key Concepts
 
@@ -162,12 +170,15 @@ This allows tests to be self-documenting and business-readable while referencing
 
 ## Technical Constraints
 
+- **MANDATORY**: Treat all warnings as errors and fix them.
+- **MANDATORY**: Ensure all software choices are in line with `../technology-stack.md`. If no technology guidance for a given area, then ask for guidance, do not assume.
+
 ### Code Style Requirements
 
 - **MANDATORY**: Use vanilla TypeScript
 - **MANDATORY**: Implement functional programming patterns throughout
 - **MANDATORY**: Use arrow functions exclusively for function definitions
-- **MANDATORY**: Avoid classes - use factory functions and closures instead (code under `features` is acceptable for testing)
+- **MANDATORY**: Avoid classes - use factory functions and closures instead (code under `web-e2e/src/features` is acceptable for testing)
 - **MANDATORY**: Markdown formatting rules: use Markdown for documentation, no HTML tags
 - **MANDATORY**: Markdown needs to be markdownlint compliant with the default rules
 - **MANDATORY**: Everything needs to be able to run locally, so it can be validated by the engineer
@@ -211,21 +222,21 @@ Follow this Acceptance Test Driven Development workflow:
 
 ### 1. Scenario Analysis
 
-For each feature in `features/*.feature`:
+For each feature in `web-e2e/src/features/*.feature`:
 
 - Read and understand the Gherkin scenario
 - Identify the Given/When/Then acceptance criteria
 - Note any data tables or example values
 - Understand the expected behavior completely
-- Data used in the scenario are noted in `features/data/data.json`
+- Data used in the scenario are noted in `web-e2e/src/features/data/data.json`
   - Use name or aliases in the data file to associate with steps in the scenarios
 
 ### 2. Implementation to Satisfy Existing Tests
 
-- **Review existing Cucumber step definitions** in `features/step-definitions/*.playwright.steps.ts`
+- **Review existing step definitions** in `web-e2e/src/features/step-definitions/*.playwright.steps.ts`
 - **Run the E2E tests** to see which scenarios are currently failing
 - **Implement application features** to make the failing tests pass. Implement just enough application code to make the test pass
-- **After test passes, run quality checks**: `npm run lint` in the root directory
+- **After test passes, run quality checks**: `npm run quality` in the root directory
 - **Focus on the React components and business logic** that the tests are exercising
 - Refactor while keeping tests green and code quality high
 
@@ -240,7 +251,7 @@ For each feature in `features/*.feature`:
 
 **CRITICAL**: Follow ATDD methodology strictly:
 
-1. **Start by reading** a feature file completely from `features/*.feature`
+1. **Start by reading** a feature file completely from `web-e2e/src/features/*.feature`
 2. **Implement scenarios in order** as listed in the feature file
 3. **Do not proceed** to the next scenario until the current one passes
 4. **Reference the feature file continuously** during implementation
@@ -274,42 +285,51 @@ All implementation must:
 #### Step File Structure Example
 
 ```javascript
-import HomePage from '../page-objects/home.playwright.page';
-import LoginPage from '../page-objects/login.playwright.page';
-import { Given } from '../fixtures/test';
+import HomePage from '../page-objects/home.playwright.page'
+import LoginPage from '../page-objects/login.playwright.page'
+import { Given } from '../fixtures/test'
 
-Given('{string} logs in', async ({ page, dataManager }, userNameAlias: string) => {
-  const userData = dataManager.getData(userNameAlias, true);
-  const homePage = new HomePage(page);
-  const loginPage = new LoginPage(page);
+Given(
+  '{string} logs in',
+  async ({ page, dataManager }, userNameAlias: string) => {
+    const userData = dataManager.getData(userNameAlias, true)
+    const homePage = new HomePage(page)
+    const loginPage = new LoginPage(page)
 
-  await homePage.open();
-  await loginPage.login(userData.username, userData.password);
-});
+    await homePage.open()
+    await loginPage.login(userData.username, userData.password)
+  }
+)
 
-Given('{string} logs in with these mods', async ({ page, dataManager }, userNameAlias: string, table: any) => {
-  const modDataNames = dataManager.getDataTableColumnValues(table, 0);
-  const userData = dataManager.getDataWithMods(userNameAlias, modDataNames);
-  const homePage = new HomePage(page);
-  const loginPage = new LoginPage(page);
+Given(
+  '{string} logs in with these mods',
+  async ({ page, dataManager }, userNameAlias: string, table: any) => {
+    const modDataNames = dataManager.getDataTableColumnValues(table, 0)
+    const userData = dataManager.getDataWithMods(userNameAlias, modDataNames)
+    const homePage = new HomePage(page)
+    const loginPage = new LoginPage(page)
 
-  await homePage.open();
-  await loginPage.login(userData.username, userData.password);
-});
+    await homePage.open()
+    await loginPage.login(userData.username, userData.password)
+  }
+)
 
-Given('{string} logs in with this mod {string}', async ({ page, dataManager }, userNameAlias: string, modName: string) => {
-  const userData = dataManager.getDataWithMods(userNameAlias, [modName]);
-  const homePage = new HomePage(page);
-  const loginPage = new LoginPage(page);
+Given(
+  '{string} logs in with this mod {string}',
+  async ({ page, dataManager }, userNameAlias: string, modName: string) => {
+    const userData = dataManager.getDataWithMods(userNameAlias, [modName])
+    const homePage = new HomePage(page)
+    const loginPage = new LoginPage(page)
 
-  await homePage.open();
-  await loginPage.login(userData.username, userData.password);
-});
+    await homePage.open()
+    await loginPage.login(userData.username, userData.password)
+  }
+)
 ```
 
 ### Features Test Data
 
-Here is an example of features test data used by the `features` test suite. This data includes information about the user's financial details and other relevant information. Data consists of personas and data chunks. The example below has one persona followed by one data chunk. The persona is named "Kelly Baddy". The data chunk contains data used typically to modify a persona or can stand alone. Personas have a name and aliases. The data chunk contains name and no aliases.
+Here is an example of features test data used by the `web-e2e/src/features` test suite. This data includes information about the user's financial details and other relevant information. Data consists of personas and data chunks. The example below has one persona followed by one data chunk. The persona is named "Kelly Baddy". The data chunk contains data used typically to modify a persona or can stand alone. Personas have a name and aliases. The data chunk contains name and no aliases.
 
 ```json
 [
@@ -452,7 +472,7 @@ await page.screenshot({ path: 'debug-screenshot.png' });
 
 ## Success Criteria
 
-The application should satisfy ALL scenarios in `features/*.feature`:
+The application should satisfy ALL scenarios in `web-e2e/src/features/*.feature`:
 
 **Each scenario must pass its acceptance criteria before the feature is considered complete.**
 

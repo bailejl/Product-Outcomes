@@ -1,6 +1,6 @@
 import { DataTable } from '@cucumber/cucumber'
 
-import testData from './data.json' with { type: 'json' }
+import * as testData from './data.json'
 
 interface Persona {
   name: string
@@ -19,13 +19,12 @@ export class DataManager {
   // Retrieves data directly from the JSON test data file.  No data  retrieved
   // is cached for later use.
   getNonCachedData(nameAlias: string): Persona | DataChunk {
-    const foundData: Persona | DataChunk | undefined = testData.find((data) => {
+    const foundData: Persona | DataChunk | undefined = testData.find(data => {
       if (data.name === nameAlias) {
         return true
       }
       if (data.aliases != null) {
-        const d =
-          data.aliases.find((alias) => alias === nameAlias) !== undefined
+        const d = data.aliases.find(alias => alias === nameAlias) !== undefined
         return d
       }
       return false
@@ -62,7 +61,7 @@ export class DataManager {
   // returned and cached for later use.
   getDataWithMods(nameAlias: string, modDataNames: string[]) {
     let finalData = this.getNonCachedData(nameAlias)
-    modDataNames.forEach((innerNameAlias) => {
+    modDataNames.forEach(innerNameAlias => {
       const data: any = this.getNonCachedData(innerNameAlias)
       // Create a copy of the modification data before removing name property
       const modData = { ...data }

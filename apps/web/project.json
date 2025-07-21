@@ -1,0 +1,10 @@
+{
+  "name": "web",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/web/src",
+  "projectType": "application",
+  "tags": [],
+  "implicitDependencies": ["api"],
+  "// targets": "to see all targets run: nx show project web --web",
+  "targets": {}
+}

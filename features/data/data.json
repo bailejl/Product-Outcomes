@@ -1,0 +1,29 @@
+[
+  {
+    "name": "Basic User",
+    "aliases": ["Basic User w/ standard access"],
+    "username": "hello_user",
+    "preferences": {
+      "platform": "web"
+    }
+  },
+  {
+    "name": "Mobile User",
+    "aliases": ["Mobile User w/ mobile preferences"],
+    "username": "mobile_user",
+    "preferences": {
+      "platform": "mobile"
+    }
+  },
+  {
+    "name": "Hello World Messages",
+    "success": "Hello World from the Database!",
+    "error": "Failed to load message",
+    "loading": "Loading..."
+  },
+  {
+    "name": "database unavailable",
+    "status": "offline",
+    "error": true
+  }
+]

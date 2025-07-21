@@ -97,19 +97,19 @@ export default class CreditFormWizard extends PlaywrightPage {
     await this.click(this.selectors.btnContinue)
 
     // Wait for navigation to citizenship section
-    await this.page.waitForURL('**\/user/form/citizenship', { timeout: 15000 })
+    await this.page.waitForURL('**/user/form/citizenship', { timeout: 15000 })
 
     await this.fillOutCitizenshipSection(data)
     await this.click(this.selectors.btnContinue)
 
     // Wait for navigation to employment section
-    await this.page.waitForURL('**\/user/form/employment', { timeout: 15000 })
+    await this.page.waitForURL('**/user/form/employment', { timeout: 15000 })
 
     await this.fillOutEmploymentSection(data)
     await this.click(this.selectors.btnContinue)
 
     // Wait for navigation to financial section
-    await this.page.waitForURL('**\/user/form/financial', { timeout: 15000 })
+    await this.page.waitForURL('**/user/form/financial', { timeout: 15000 })
 
     await this.fillOutFinancialSection(data)
   }

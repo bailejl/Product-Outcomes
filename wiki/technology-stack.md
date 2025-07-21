@@ -13,6 +13,9 @@ Product Outcomes is an enterprise-grade, cloud-native application designed to he
 - **Outcome-Focused**: Technology choices align with delivering measurable business results
 - **Monorepo**: Keeping everything together, so changes are atomic, using Nx.
 
+NX monorepo is `app centric` repo wfolloing this defintion:
+app centric repositories which are used mainly for developing applications and products. This is a common setup in companies. Such repos are characterized in having an apps and packages or libs folder, where the apps folder contains the buildable and deployable applications, while the packages or libs folder contains libraries that are specific to one or multiple applications that are being developed within the monorepo. You can still also publish some of these libs to a public registry.
+
 ## Core Platform Components
 
 ### Frontend Technologies

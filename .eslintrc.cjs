@@ -26,34 +26,40 @@ const eslintConfig = {
     project: './tsconfig.json',
   },
   plugins: [
-    '@typescript-eslint', 
-    'react', 
+    '@typescript-eslint',
+    'react',
     'react-hooks',
     'import',
     'functional',
-    'security'
+    'security',
   ],
   ignorePatterns: ['dist', '.eslintrc.cjs', 'node_modules', 'features/**/*'],
   rules: {
     // TypeScript rules
     'no-unused-vars': 'off',
-    '@typescript-eslint/no-unused-vars': ['error', { 
-      argsIgnorePattern: '^_',
-      varsIgnorePattern: '^_',
-    }],
+    '@typescript-eslint/no-unused-vars': [
+      'error',
+      {
+        argsIgnorePattern: '^_',
+        varsIgnorePattern: '^_',
+      },
+    ],
     '@typescript-eslint/no-explicit-any': 'error',
     '@typescript-eslint/explicit-function-return-type': 'off',
     '@typescript-eslint/explicit-module-boundary-types': 'off',
-    '@typescript-eslint/no-empty-interface': ['error', {
-      allowSingleExtends: true,
-    }],
-    
+    '@typescript-eslint/no-empty-interface': [
+      'error',
+      {
+        allowSingleExtends: true,
+      },
+    ],
+
     // React rules
     'react/react-in-jsx-scope': 'off',
     'react/prop-types': 'off',
     'react-hooks/rules-of-hooks': 'error',
     'react-hooks/exhaustive-deps': 'warn',
-    
+
     // General rules
     'no-console': ['error', { allow: ['warn', 'error'] }],
     'prefer-const': 'error',
@@ -67,49 +73,57 @@ const eslintConfig = {
       'error',
       {
         selector: 'FunctionDeclaration',
-        message: 'Function declarations are not allowed. Use arrow functions instead.',
+        message:
+          'Function declarations are not allowed. Use arrow functions instead.',
       },
       {
         selector: 'ClassDeclaration',
-        message: 'Classes are not allowed (except in test code under features/). Use factory functions instead.',
+        message:
+          'Classes are not allowed (except in test code under features/). Use factory functions instead.',
       },
     ],
-    
+
     // Import rules
     'no-duplicate-imports': 'error',
-    'sort-imports': ['error', {
-      ignoreCase: true,
-      ignoreDeclarationSort: true,
-    }],
-    'import/order': ['warn', {
-      groups: [
-        'builtin',
-        'external',
-        'internal',
-        ['parent', 'sibling'],
-        'index',
-      ],
-      'newlines-between': 'always',
-      alphabetize: {
-        order: 'asc',
-        caseInsensitive: true,
+    'sort-imports': [
+      'error',
+      {
+        ignoreCase: true,
+        ignoreDeclarationSort: true,
       },
-    }],
+    ],
+    'import/order': [
+      'warn',
+      {
+        groups: [
+          'builtin',
+          'external',
+          'internal',
+          ['parent', 'sibling'],
+          'index',
+        ],
+        'newlines-between': 'always',
+        alphabetize: {
+          order: 'asc',
+          caseInsensitive: true,
+        },
+      },
+    ],
     'import/no-named-as-default': 'off',
     'import/no-named-as-default-member': 'off',
     'import/no-unresolved': 'off', // Temporarily disabled due to resolver issues
     'import/no-cycle': 'warn',
-    
+
     // Functional programming rules (relaxed for practical use)
     'functional/no-let': 'warn',
     'functional/immutable-data': 'off',
     'functional/no-expression-statements': 'off',
     'functional/prefer-immutable-types': 'off',
-    
+
     // Security rules
     'security/detect-object-injection': 'warn',
     'security/detect-non-literal-regexp': 'warn',
-    
+
     // Material-UI rules (disabled until plugin is properly configured)
     // 'mui/no-deprecated': 'error',
   },
@@ -131,10 +145,14 @@ const eslintConfig = {
       extends: ['plugin:playwright/recommended'],
       plugins: ['playwright'],
       rules: {
-        'no-restricted-syntax': ['error', {
-          selector: 'FunctionDeclaration',
-          message: 'Function declarations are not allowed. Use arrow functions instead.',
-        }],
+        'no-restricted-syntax': [
+          'error',
+          {
+            selector: 'FunctionDeclaration',
+            message:
+              'Function declarations are not allowed. Use arrow functions instead.',
+          },
+        ],
         // Disable functional programming rules in test files
         'functional/no-classes': 'off',
         'functional/no-this-expressions': 'off',
@@ -143,10 +161,7 @@ const eslintConfig = {
     {
       // Jest and Testing Library rules for unit tests
       files: ['**/*.spec.tsx', '**/*.test.tsx', '**/*.spec.ts', '**/*.test.ts'],
-      extends: [
-        'plugin:testing-library/react',
-        'plugin:jest/recommended'
-      ],
+      extends: ['plugin:testing-library/react', 'plugin:jest/recommended'],
       plugins: ['testing-library', 'jest'],
       env: {
         jest: true,
