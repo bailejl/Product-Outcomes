@@ -2,14 +2,13 @@
 
 ## Overview
 
-Product Outcomes is an enterprise-grade, cloud-native application designed to help organizations deliver products that "WOW users while achieving business outcomes." The technology stack emphasizes outcomes over outputs, supporting mobile and web applications with robust AI capabilities.
+Product Outcomes is an enterprise-grade, cloud-native application designed to help organizations deliver products that "WOW users while achieving business outcomes." The technology stack emphasizes outcomes over outputs, supporting mobile and web applications.
 
 ## Architecture Philosophy
 
 - **Cloud-Native**: Designed for scalable cloud deployment
 - **Enterprise-Grade**: Built for large-scale organizational use
 - **Multi-Platform**: Supports mobile, web, and server-side applications
-- **AI-Powered**: Integrated AI assistants for enhanced user experience
 - **Outcome-Focused**: Technology choices align with delivering measurable business results
 - **Monorepo**: Keeping everything together, so changes are atomic, using Nx.
 
@@ -31,7 +30,7 @@ app centric repositories which are used mainly for developing applications and p
 #### Mobile Application
 
 - **Cross-Platform**: Support for both iOS and Android
-- **Framework**: React Native or Flutter (to be confirmed)
+- **Framework**: React Native
 - **Native Features**: Platform-specific integrations for enterprise use
 
 ### Backend Technologies
@@ -49,14 +48,6 @@ app centric repositories which are used mainly for developing applications and p
 - **Schema Management**: SQL migrations for version control
 - **Data Modeling**: Complex organizational hierarchy support
 - **Scalability**: Designed for millions of users/organizations
-
-#### AI/ML Components
-
-- **AI Assistants**:
-  - OKR AI Assistant
-  - Portfolio AI Assistant
-- **Integration**: Claude Flow for AI orchestration
-- **Capabilities**: Natural language processing for business insights
 
 ## Development Environment
 
@@ -109,13 +100,6 @@ app centric repositories which are used mainly for developing applications and p
 - **Performance**: Optimized for large-scale data operations
 - **Backup**: Automated backup and recovery systems
 
-## AI and Machine Learning
-
-### AI Assistants
-
-- **OKR AI Assistant**: Helps with objective setting and tracking
-- **Portfolio AI Assistant**: Provides insights for portfolio management
-- **Claude Flow Integration**: Advanced AI orchestration and coordination
 
 ### ML Capabilities
 
@@ -193,14 +177,12 @@ app centric repositories which are used mainly for developing applications and p
 ### Runtime Environments
 
 - **Node.js**: v24 (latest LTS)
-- **Deno**: v1.46.3 (for Claude Flow)
 - **TypeScript**: Latest stable version
 - **npm**: Package management
 
 ### Development Dependencies
 
 - **Playwright**: Latest for E2E and API testing
-- **Claude Flow**: Alpha version for AI coordination
 - **ESLint**: Code linting
 - **MegaLinter**: Linting of everything else.
 - **Prettier**: Code formatting

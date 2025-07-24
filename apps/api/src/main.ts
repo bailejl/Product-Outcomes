@@ -1,67 +1,90 @@
-/**
- * Hello World API Server
- * Functional programming patterns with Express.js
- */
+import 'reflect-metadata';
+import express from 'express';
+import cors from 'cors';
+import { initializeDatabase } from '@product-outcomes/database';
+import messagesRouter from './routes/messages';
 
-import express from 'express'
-import * as path from 'path'
-import createMessagesRouter from './routes/messages'
-import { checkDatabaseHealth } from './db/connection'
+const app = express();
+const port = process.env.API_PORT || 3333;
 
-// Factory function for creating Express app
-const createApp = (): express.Application => {
-  const app = express()
+// Middleware
+app.use(cors());
+app.use(express.json());
 
-  // Middleware
-  app.use(express.json())
-  app.use('/assets', express.static(path.join(__dirname, 'assets')))
-
-  // CORS middleware for development
-  app.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', '*')
-    res.header(
-      'Access-Control-Allow-Headers',
-      'Origin, X-Requested-With, Content-Type, Accept'
-    )
-    next()
-  })
-
-  // Routes
-  app.use('/api/messages', createMessagesRouter())
-
-  // Health check endpoint
-  app.get('/api/health', async (req, res) => {
-    const dbHealthy = await checkDatabaseHealth()
-    res.json({
-      status: 'ok',
-      database: dbHealthy ? 'connected' : 'disconnected',
+// Health check endpoint
+app.get('/api/health', async (req, res) => {
+  try {
+    // Basic health check
+    const healthStatus = {
+      status: 'healthy',
       timestamp: new Date().toISOString(),
-    })
-  })
+      version: '1.0.0',
+      environment: process.env.NODE_ENV || 'development',
+      services: {
+        database: 'unknown'
+      }
+    };
 
-  // Default route
-  app.get('/api', (req, res) => {
-    res.send({ message: 'Hello World API Server' })
-  })
+    // Check database connection
+    try {
+      const { AppDataSource } = await import('@product-outcomes/database');
+      if (AppDataSource.isInitialized) {
+        await AppDataSource.query('SELECT 1');
+        healthStatus.services.database = 'connected';
+      } else {
+        healthStatus.services.database = 'not_initialized';
+      }
+    } catch (error) {
+      healthStatus.services.database = 'error';
+    }
 
-  return app
+    res.json(healthStatus);
+  } catch (error) {
+    res.status(500).json({
+      status: 'unhealthy',
+      error: error.message,
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
+// Routes
+app.use('/api/messages', messagesRouter);
+
+// Default route
+app.get('/api', (req, res) => {
+  res.json({ 
+    message: 'Product Outcomes API',
+    version: '1.0.0',
+    timestamp: new Date().toISOString()
+  });
+});
+
+// Start server
+async function startServer() {
+  try {
+    // Initialize database first
+    console.log('🔄 Initializing database...');
+    await initializeDatabase();
+    
+    // Start HTTP server
+    app.listen(port, () => {
+      console.log(`🚀 API server running on http://localhost:${port}`);
+      console.log(`📊 Health check: http://localhost:${port}/api/health`);
+      console.log(`💬 Messages API: http://localhost:${port}/api/messages`);
+    });
+  } catch (error) {
+    console.error('❌ Failed to start server:', error);
+    process.exit(1);
+  }
 }
 
-// Factory function for starting server
-const startServer = (app: express.Application, port: number) => {
-  const server = app.listen(port, () => {
-    console.log(`🚀 Hello World API listening at http://localhost:${port}/api`)
-    console.log(`📊 Health check: http://localhost:${port}/api/health`)
-    console.log(
-      `👋 Hello World: http://localhost:${port}/api/messages/hello-world`
-    )
-  })
+// Handle graceful shutdown
+process.on('SIGINT', async () => {
+  console.log('\n🔄 Shutting down gracefully...');
+  const { closeDatabaseConnection } = await import('@product-outcomes/database');
+  await closeDatabaseConnection();
+  process.exit(0);
+});
 
-  server.on('error', console.error)
-  return server
-}
-
-// Main execution
-const app = createApp()
-const port = parseInt(process.env.PORT || '3333', 10)
-startServer(app, port)
+startServer();

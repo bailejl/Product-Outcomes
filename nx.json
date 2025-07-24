@@ -25,6 +25,11 @@
     "lint": {
       "cache": true,
       "inputs": ["default", "{workspaceRoot}/.eslintrc.json"]
+    },
+    "@nx/js:tsc": {
+      "cache": true,
+      "dependsOn": ["^build"],
+      "inputs": ["production", "^production"]
     }
   },
   "tui": {

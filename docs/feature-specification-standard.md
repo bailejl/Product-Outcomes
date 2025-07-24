@@ -16,7 +16,7 @@ Product Outcomes emphasizes **outcomes over outputs** to help organizations deli
 # Feature Name: [Clear, concise feature name]
 
 **Feature ID**: PO-YYYY-### (e.g., PO-2025-001)
-**Type**: [Core | Enhancement | Integration | AI Assistant | Infrastructure]
+**Type**: [Core | Enhancement | Integration | Infrastructure]
 **Priority**: [Critical | High | Medium | Low]
 **Target Release**: [Quarter/Version]
 **Owner**: [Product Owner/Team]
@@ -68,7 +68,7 @@ Product Outcomes emphasizes **outcomes over outputs** to help organizations deli
 - **Components Affected**: [List affected system components]
 - **Data Model Changes**: [New entities, schema changes, migrations]
 - **API Changes**: [New endpoints, modifications, deprecations]
-- **Integration Points**: [External systems, AI assistants, notifications]
+- **Integration Points**: [External systems, notifications]
 
 ### Implementation Approach
 
@@ -145,14 +145,6 @@ Features directly supporting OKR management, portfolio tracking, and product roa
 - Require comprehensive testing and documentation
 - Impact system architecture and performance
 
-### AI Assistant Features
-
-Features enhancing the AI-powered capabilities for OKRs and portfolio management.
-
-- Must include AI model considerations
-- Require data privacy and ethical AI reviews
-- Need performance monitoring for AI responses
-
 ### Integration Features
 
 Features connecting with external systems or enhancing platform capabilities.
@@ -212,7 +204,6 @@ Before approval, every feature specification must meet these criteria:
 7. **Align with Architecture**: Ensure features support the cloud-native, enterprise-grade architecture
 8. **Security First**: Consider security implications from the beginning
 9. **Mobile-Web Parity**: Ensure consistent experience across platforms
-10. **AI Integration**: Consider how features can leverage or enhance AI capabilities
 
 ---
 

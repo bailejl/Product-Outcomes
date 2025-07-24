@@ -1,5 +1,5 @@
 import { jsxs, jsx } from 'react/jsx-runtime';
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 
 function Ui({
   title,
@@ -2985,93 +2985,303 @@ typeof SuppressedError === "function" ? SuppressedError : function (error, suppr
     return e.name = "SuppressedError", e.error = error, e.suppressed = suppressed, e;
 };
 
-// Factory function for creating hello world state management
-const createHelloWorldState = () => {
-  const [message, setMessage] = useState('Loading...');
-  const [error, setError] = useState(null);
+function HelloWorld() {
+  const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
-  // Arrow function for fetching message
-  const fetchMessage = () => __awaiter(void 0, void 0, void 0, function* () {
+  const [error, setError] = useState(null);
+  const fetchMessage = () => __awaiter(this, void 0, void 0, function* () {
     try {
       setLoading(true);
       setError(null);
-      const response = yield fetch('/api/messages/hello-world');
+      const response = yield fetch('http://localhost:3333/api/messages/hello-world');
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      const data = yield response.json();
-      setMessage(data.message);
+      const result = yield response.json();
+      setData(result);
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to load message';
-      setError(errorMessage);
-      setMessage('Failed to load message');
+      console.error('Failed to fetch message:', err);
+      setError(err instanceof Error ? err.message : 'Failed to fetch message');
+      setData(null);
     } finally {
       setLoading(false);
     }
   });
-  return {
-    message,
-    error,
-    loading,
-    fetchMessage
-  };
-};
-// Main Hello World component (arrow function)
-const HelloWorld = () => {
-  const {
-    message,
-    error,
-    loading,
-    fetchMessage
-  } = createHelloWorldState();
   useEffect(() => {
     fetchMessage();
   }, []);
-  // Render loading state
   if (loading) {
-    return jsxs("div", {
-      className: "hello-world-container",
+    return jsx("div", {
+      className: "card max-w-2xl mx-auto",
       "data-testid": "hello-world-loading",
-      children: [jsx("div", {
-        className: "loading-spinner"
-      }), jsx("p", {
-        children: "Loading..."
-      })]
+      children: jsxs("div", {
+        className: "text-center",
+        children: [jsx("div", {
+          className: "animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600 mx-auto"
+        }), jsx("p", {
+          className: "mt-4 text-gray-600",
+          children: "Loading..."
+        })]
+      })
     });
   }
-  // Render error state
+  // Error state
   if (error) {
     return jsxs("div", {
-      className: "hello-world-container error",
-      "data-testid": "hello-world-error",
-      children: [jsx("h2", {
-        children: "Error"
-      }), jsx("p", {
-        "data-testid": "error-message",
-        children: error
-      }), jsx("button", {
-        onClick: fetchMessage,
-        className: "retry-button",
-        children: "Retry"
+      className: "space-y-6",
+      children: [jsxs("div", {
+        className: "card max-w-2xl mx-auto text-center",
+        "data-testid": "hello-world-error",
+        children: [jsx("h2", {
+          className: "text-2xl font-bold text-gray-900 mb-4",
+          children: "Hello World Message"
+        }), jsxs("div", {
+          className: "bg-red-50 border border-red-200 rounded-lg p-4",
+          children: [jsx("p", {
+            className: "text-sm text-red-700",
+            "data-testid": "error-message",
+            children: error
+          }), jsx("p", {
+            className: "text-xs text-red-600 mt-2",
+            children: "Make sure the API server is running on http://localhost:3333"
+          }), jsx("button", {
+            onClick: fetchMessage,
+            className: "mt-4 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors",
+            children: "Retry"
+          })]
+        })]
+      }), jsxs("div", {
+        className: "card max-w-4xl mx-auto",
+        children: [jsx("h3", {
+          className: "text-lg font-semibold text-gray-900 mb-4",
+          children: "\uD83D\uDE80 Phase 1 Implementation Status"
+        }), jsxs("div", {
+          className: "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4",
+          children: [jsx("div", {
+            className: "bg-green-50 border border-green-200 rounded-lg p-4",
+            children: jsxs("div", {
+              className: "flex items-center",
+              children: [jsx("span", {
+                className: "text-green-600 text-xl mr-2",
+                children: "\u2705"
+              }), jsxs("div", {
+                children: [jsx("h4", {
+                  className: "font-medium text-green-900",
+                  children: "Docker Services"
+                }), jsx("p", {
+                  className: "text-sm text-green-700",
+                  children: "PostgreSQL, Redis, MinIO"
+                })]
+              })]
+            })
+          }), jsx("div", {
+            className: "bg-green-50 border border-green-200 rounded-lg p-4",
+            children: jsxs("div", {
+              className: "flex items-center",
+              children: [jsx("span", {
+                className: "text-green-600 text-xl mr-2",
+                children: "\u2705"
+              }), jsxs("div", {
+                children: [jsx("h4", {
+                  className: "font-medium text-green-900",
+                  children: "TypeORM"
+                }), jsx("p", {
+                  className: "text-sm text-green-700",
+                  children: "Database ORM integration"
+                })]
+              })]
+            })
+          }), jsx("div", {
+            className: "bg-green-50 border border-green-200 rounded-lg p-4",
+            children: jsxs("div", {
+              className: "flex items-center",
+              children: [jsx("span", {
+                className: "text-green-600 text-xl mr-2",
+                children: "\u2705"
+              }), jsxs("div", {
+                children: [jsx("h4", {
+                  className: "font-medium text-green-900",
+                  children: "TailwindCSS"
+                }), jsx("p", {
+                  className: "text-sm text-green-700",
+                  children: "Modern CSS framework"
+                })]
+              })]
+            })
+          }), jsx("div", {
+            className: "bg-blue-50 border border-blue-200 rounded-lg p-4",
+            children: jsxs("div", {
+              className: "flex items-center",
+              children: [jsx("span", {
+                className: "text-blue-600 text-xl mr-2",
+                children: "\uD83D\uDD04"
+              }), jsxs("div", {
+                children: [jsx("h4", {
+                  className: "font-medium text-blue-900",
+                  children: "Testing"
+                }), jsx("p", {
+                  className: "text-sm text-blue-700",
+                  children: "Validation in progress"
+                })]
+              })]
+            })
+          })]
+        }), jsxs("div", {
+          className: "mt-6 bg-gray-50 rounded-lg p-4",
+          children: [jsx("h4", {
+            className: "font-medium text-gray-900 mb-2",
+            children: "Next Steps (Phase 2):"
+          }), jsxs("ul", {
+            className: "text-sm text-gray-700 space-y-1",
+            children: [jsx("li", {
+              children: "\u2022 JWT Authentication system"
+            }), jsx("li", {
+              children: "\u2022 React authentication flows"
+            }), jsx("li", {
+              children: "\u2022 Protected routes and middleware"
+            })]
+          })]
+        })]
       })]
     });
   }
-  // Render success state
+  // Success state  
   return jsxs("div", {
-    className: "hello-world-container success",
-    "data-testid": "hello-world-success",
-    children: [jsx("h1", {
-      "data-testid": "hello-message",
-      children: message
-    }), jsx("p", {
-      className: "subtitle",
-      children: "This message came from the database!"
-    }), jsx("button", {
-      onClick: fetchMessage,
-      className: "refresh-button",
-      children: "Refresh"
+    className: "space-y-6",
+    children: [jsxs("div", {
+      className: "card max-w-2xl mx-auto text-center",
+      "data-testid": "hello-world-success",
+      children: [jsx("h2", {
+        className: "text-2xl font-bold text-gray-900 mb-4",
+        children: "Hello World Message"
+      }), data && jsxs("div", {
+        className: "space-y-4",
+        children: [jsxs("div", {
+          className: "bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-6 border border-blue-200",
+          children: [jsx("p", {
+            className: "text-xl font-medium text-gray-900 mb-2",
+            "data-testid": "hello-message",
+            children: data.message
+          }), jsx("p", {
+            className: "text-sm text-gray-600",
+            children: "This message came from the database!"
+          }), jsxs("div", {
+            className: "flex justify-center space-x-4 text-sm text-gray-600 mt-4",
+            children: [jsxs("span", {
+              className: "flex items-center",
+              children: [jsx("span", {
+                className: "w-2 h-2 bg-green-400 rounded-full mr-2"
+              }), "Source: ", data.source]
+            }), data.id && jsxs("span", {
+              className: "flex items-center",
+              children: [jsx("span", {
+                className: "w-2 h-2 bg-blue-400 rounded-full mr-2"
+              }), "ID: ", data.id.substring(0, 8), "..."]
+            })]
+          })]
+        }), jsxs("div", {
+          className: "text-xs text-gray-500",
+          children: ["Fetched at: ", new Date(data.timestamp).toLocaleString()]
+        }), jsx("button", {
+          onClick: fetchMessage,
+          className: "px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors",
+          children: "Refresh"
+        })]
+      })]
+    }), jsxs("div", {
+      className: "card max-w-4xl mx-auto",
+      children: [jsx("h3", {
+        className: "text-lg font-semibold text-gray-900 mb-4",
+        children: "\uD83D\uDE80 Phase 1 Implementation Status"
+      }), jsxs("div", {
+        className: "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4",
+        children: [jsx("div", {
+          className: "bg-green-50 border border-green-200 rounded-lg p-4",
+          children: jsxs("div", {
+            className: "flex items-center",
+            children: [jsx("span", {
+              className: "text-green-600 text-xl mr-2",
+              children: "\u2705"
+            }), jsxs("div", {
+              children: [jsx("h4", {
+                className: "font-medium text-green-900",
+                children: "Docker Services"
+              }), jsx("p", {
+                className: "text-sm text-green-700",
+                children: "PostgreSQL, Redis, MinIO"
+              })]
+            })]
+          })
+        }), jsx("div", {
+          className: "bg-green-50 border border-green-200 rounded-lg p-4",
+          children: jsxs("div", {
+            className: "flex items-center",
+            children: [jsx("span", {
+              className: "text-green-600 text-xl mr-2",
+              children: "\u2705"
+            }), jsxs("div", {
+              children: [jsx("h4", {
+                className: "font-medium text-green-900",
+                children: "TypeORM"
+              }), jsx("p", {
+                className: "text-sm text-green-700",
+                children: "Database ORM integration"
+              })]
+            })]
+          })
+        }), jsx("div", {
+          className: "bg-green-50 border border-green-200 rounded-lg p-4",
+          children: jsxs("div", {
+            className: "flex items-center",
+            children: [jsx("span", {
+              className: "text-green-600 text-xl mr-2",
+              children: "\u2705"
+            }), jsxs("div", {
+              children: [jsx("h4", {
+                className: "font-medium text-green-900",
+                children: "TailwindCSS"
+              }), jsx("p", {
+                className: "text-sm text-green-700",
+                children: "Modern CSS framework"
+              })]
+            })]
+          })
+        }), jsx("div", {
+          className: "bg-blue-50 border border-blue-200 rounded-lg p-4",
+          children: jsxs("div", {
+            className: "flex items-center",
+            children: [jsx("span", {
+              className: "text-blue-600 text-xl mr-2",
+              children: "\uD83D\uDD04"
+            }), jsxs("div", {
+              children: [jsx("h4", {
+                className: "font-medium text-blue-900",
+                children: "Testing"
+              }), jsx("p", {
+                className: "text-sm text-blue-700",
+                children: "Validation in progress"
+              })]
+            })]
+          })
+        })]
+      }), jsxs("div", {
+        className: "mt-6 bg-gray-50 rounded-lg p-4",
+        children: [jsx("h4", {
+          className: "font-medium text-gray-900 mb-2",
+          children: "Next Steps (Phase 2):"
+        }), jsxs("ul", {
+          className: "text-sm text-gray-700 space-y-1",
+          children: [jsx("li", {
+            children: "\u2022 JWT Authentication system"
+          }), jsx("li", {
+            children: "\u2022 React authentication flows"
+          }), jsx("li", {
+            children: "\u2022 Protected routes and middleware"
+          })]
+        })]
+      })]
     })]
   });
-};
+}
 
 export { HelloWorld, Ui };

@@ -32,11 +32,10 @@ describe('App Component', () => {
     expect(helloWorld).toBeInTheDocument()
   })
 
-  it('should render the footer with technology stack', () => {
+  it('should render the technology badges', () => {
     render(<App />)
-    const footer = screen.getByText(
-      'Built with React, Express.js, PostgreSQL, and Nx'
-    )
-    expect(footer).toBeInTheDocument()
+    expect(screen.getByText('React 19')).toBeInTheDocument()
+    expect(screen.getByText('Express.js')).toBeInTheDocument()
+    expect(screen.getByText('PostgreSQL')).toBeInTheDocument()
   })
 })
