@@ -19,6 +19,8 @@ app centric repositories which are used mainly for developing applications and p
 
 ### Frontend Technologies
 
+- **UI Compoenents Library**: [Gluestack UI v2](https://gluestack.io/) for both React and React Native
+
 #### Web Application
 
 - **Framework**: Modern JavaScript/TypeScript framework (likely React/Angular/Vue)

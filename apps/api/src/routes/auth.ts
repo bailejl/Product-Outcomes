@@ -4,9 +4,23 @@ import {
   UserRole,
   LoginRequest,
   RegisterRequest,
+  PasswordResetRequest,
+  PasswordResetConfirm,
   AuthenticatedRequest,
 } from '@product-outcomes/auth'
 import { UserRepository, User } from '@product-outcomes/database'
+import { sessionManager, sessionMonitor } from '../main'
+import { rateLimiters } from '../middleware/rateLimiter'
+
+// Extend the session object to include user data
+declare module 'express-session' {
+  interface SessionData {
+    userId?: string
+    user?: Omit<User, 'password'>
+    lastAccess?: number
+    createdAt?: number
+  }
+}
 
 const router = Router()
 const authService = new AuthService()
@@ -16,7 +30,7 @@ const userRepository = new UserRepository()
  * POST /auth/register
  * Register a new user account
  */
-router.post('/register', async (req: Request, res: Response) => {
+router.post('/register', rateLimiters.auth, async (req: Request, res: Response) => {
   try {
     const { email, password, firstName, lastName }: RegisterRequest = req.body
 
@@ -54,6 +68,20 @@ router.post('/register', async (req: Request, res: Response) => {
         )
     )
 
+    // Store user data in session after registration
+    req.session.userId = result.user.id
+    req.session.user = result.user
+    req.session.lastAccess = Date.now()
+    req.session.createdAt = Date.now()
+
+    // Save session
+    await new Promise<void>((resolve, reject) => {
+      req.session.save((err) => {
+        if (err) reject(err)
+        else resolve()
+      })
+    })
+
     res.status(201).json({
       message: 'User registered successfully',
       user: result.user,
@@ -75,7 +103,7 @@ router.post('/register', async (req: Request, res: Response) => {
  * POST /auth/login
  * Authenticate user and return tokens
  */
-router.post('/login', async (req: Request, res: Response) => {
+router.post('/login', rateLimiters.login, async (req: Request, res: Response) => {
   try {
     const { email, password, rememberMe }: LoginRequest = req.body
 
@@ -104,6 +132,23 @@ router.post('/login', async (req: Request, res: Response) => {
         email => userRepository.findByEmail(email),
         userId => userRepository.updateLastLogin(userId)
       )
+
+      // Check concurrent session limits
+      await sessionManager.enforceConcurrentSessionLimit(result.user.id)
+
+      // Store user data in session
+      req.session.userId = result.user.id
+      req.session.user = result.user
+      req.session.lastAccess = Date.now()
+      req.session.createdAt = Date.now()
+
+      // Save session
+      await new Promise<void>((resolve, reject) => {
+        req.session.save((err) => {
+          if (err) reject(err)
+          else resolve()
+        })
+      })
 
       res.json({
         message: 'Login successful',
@@ -163,20 +208,41 @@ router.post('/refresh', async (req: Request, res: Response) => {
 
 /**
  * POST /auth/logout
- * Logout user (client should discard tokens)
+ * Logout user and invalidate session
  */
 router.post(
   '/logout',
   authService.middleware.authenticate,
-  (req: AuthenticatedRequest, res: Response) => {
-    // In a production environment, you might want to:
-    // 1. Add tokens to a blacklist
-    // 2. Store logout events for audit purposes
-    // 3. Clear any server-side session data
+  async (req: AuthenticatedRequest, res: Response) => {
+    try {
+      const userId = req.userId || req.session.userId
 
-    res.json({
-      message: 'Logout successful',
-    })
+      if (userId) {
+        // Invalidate all user sessions
+        await sessionManager.invalidateUserSessions(userId)
+      }
+
+      // Destroy current session
+      await new Promise<void>((resolve, reject) => {
+        req.session.destroy((err) => {
+          if (err) reject(err)
+          else resolve()
+        })
+      })
+
+      // Clear the session cookie
+      res.clearCookie('product-outcomes.sid')
+
+      res.json({
+        message: 'Logout successful',
+      })
+    } catch (error) {
+      console.error('Logout error:', error)
+      res.status(500).json({
+        error: 'Logout failed',
+        message: 'An error occurred during logout',
+      })
+    }
   }
 )
 
@@ -354,6 +420,269 @@ router.post(
 )
 
 /**
+ * POST /auth/forgot-password
+ * Request password reset
+ */
+router.post('/forgot-password', rateLimiters.passwordReset, async (req: Request, res: Response) => {
+  try {
+    const { email }: PasswordResetRequest = req.body
+
+    // Validate required fields
+    if (!email) {
+      return res.status(400).json({
+        error: 'Validation failed',
+        message: 'Email is required',
+      })
+    }
+
+    // Request password reset
+    const result = await authService.requestPasswordReset(
+      { email },
+      email => userRepository.findByEmail(email),
+      (userId, updates) => userRepository.update(userId, updates)
+    )
+
+    res.json(result)
+  } catch (error) {
+    console.error('Password reset request error:', error)
+    res.status(500).json({
+      error: 'Password reset failed',
+      message: 'An error occurred while processing password reset request',
+    })
+  }
+})
+
+/**
+ * GET /auth/reset-password/:token
+ * Verify password reset token
+ */
+router.get('/reset-password/:token', rateLimiters.auth, async (req: Request, res: Response) => {
+  try {
+    const { token } = req.params
+
+    if (!token) {
+      return res.status(400).json({
+        error: 'Validation failed',
+        message: 'Reset token is required',
+      })
+    }
+
+    // Verify token validity
+    const result = await authService.verifyResetToken(
+      token,
+      token => userRepository.findByPasswordResetToken(token)
+    )
+
+    if (!result.valid) {
+      return res.status(400).json({
+        error: 'Invalid token',
+        message: result.expired ? 'Reset token has expired' : 'Invalid reset token',
+      })
+    }
+
+    res.json({
+      message: 'Reset token is valid',
+      valid: true,
+    })
+  } catch (error) {
+    console.error('Token verification error:', error)
+    res.status(500).json({
+      error: 'Token verification failed',
+      message: 'An error occurred while verifying reset token',
+    })
+  }
+})
+
+/**
+ * POST /auth/reset-password
+ * Reset password using token
+ */
+router.post('/reset-password', rateLimiters.auth, async (req: Request, res: Response) => {
+  try {
+    const { token, newPassword }: PasswordResetConfirm = req.body
+
+    // Validate required fields
+    if (!token || !newPassword) {
+      return res.status(400).json({
+        error: 'Validation failed',
+        message: 'Reset token and new password are required',
+      })
+    }
+
+    // Reset password
+    const result = await authService.resetPassword(
+      { token, newPassword },
+      token => userRepository.findByPasswordResetToken(token),
+      (userId, updates) => userRepository.update(userId, updates)
+    )
+
+    res.json(result)
+  } catch (error) {
+    console.error('Password reset error:', error)
+    
+    // Handle specific validation errors
+    if (error instanceof Error) {
+      if (error.message.includes('Invalid or expired')) {
+        return res.status(400).json({
+          error: 'Reset failed',
+          message: error.message,
+        })
+      }
+      
+      if (error.message.includes('Password')) {
+        return res.status(400).json({
+          error: 'Password validation failed',
+          message: error.message,
+        })
+      }
+    }
+
+    res.status(500).json({
+      error: 'Password reset failed',
+      message: 'An error occurred while resetting password',
+    })
+  }
+})
+
+/**
+ * GET /auth/sessions
+ * Get current user's session info
+ */
+router.get(
+  '/sessions',
+  authService.middleware.authenticate,
+  async (req: AuthenticatedRequest, res: Response) => {
+    try {
+      const userId = req.userId
+      if (!userId) {
+        return res.status(401).json({
+          error: 'Authentication failed',
+          message: 'User ID not found',
+        })
+      }
+
+      const sessionCount = await sessionManager.getUserSessionCount(userId)
+      
+      res.json({
+        activeSessions: sessionCount,
+        currentSession: {
+          id: req.sessionID,
+          lastAccess: req.session.lastAccess,
+          createdAt: req.session.createdAt,
+        },
+      })
+    } catch (error) {
+      console.error('Session info error:', error)
+      res.status(500).json({
+        error: 'Session info failed',
+        message: 'An error occurred while fetching session information',
+      })
+    }
+  }
+)
+
+/**
+ * DELETE /auth/sessions
+ * Invalidate all user sessions except current one
+ */
+router.delete(
+  '/sessions',
+  authService.middleware.authenticate,
+  async (req: AuthenticatedRequest, res: Response) => {
+    try {
+      const userId = req.userId
+      if (!userId) {
+        return res.status(401).json({
+          error: 'Authentication failed',
+          message: 'User ID not found',
+        })
+      }
+
+      const currentSessionId = req.sessionID
+
+      // Get all session keys for this user
+      await sessionManager.invalidateUserSessions(userId)
+      
+      // Recreate current session
+      req.session.userId = userId
+      req.session.lastAccess = Date.now()
+      
+      await new Promise<void>((resolve, reject) => {
+        req.session.save((err) => {
+          if (err) reject(err)
+          else resolve()
+        })
+      })
+
+      res.json({
+        message: 'All other sessions invalidated successfully',
+      })
+    } catch (error) {
+      console.error('Session invalidation error:', error)
+      res.status(500).json({
+        error: 'Session invalidation failed',
+        message: 'An error occurred while invalidating sessions',
+      })
+    }
+  }
+)
+
+/**
+ * GET /auth/monitor
+ * Get session monitoring report (admin only)
+ */
+router.get(
+  '/monitor',
+  authService.middleware.authenticate,
+  authService.middleware.requireRole(UserRole.ADMIN),
+  async (req: AuthenticatedRequest, res: Response) => {
+    try {
+      const report = sessionMonitor.generateReport()
+      const detailedStats = await sessionMonitor.getDetailedStats()
+      
+      res.json({
+        report,
+        stats: detailedStats,
+        timestamp: new Date().toISOString(),
+      })
+    } catch (error) {
+      console.error('Session monitoring error:', error)
+      res.status(500).json({
+        error: 'Monitoring fetch failed',
+        message: 'An error occurred while fetching monitoring data',
+      })
+    }
+  }
+)
+
+/**
+ * POST /auth/monitor/cleanup
+ * Manually trigger session cleanup (admin only)
+ */
+router.post(
+  '/monitor/cleanup',
+  authService.middleware.authenticate,
+  authService.middleware.requireRole(UserRole.ADMIN),
+  async (req: AuthenticatedRequest, res: Response) => {
+    try {
+      const cleanedCount = await sessionMonitor.triggerCleanup()
+      
+      res.json({
+        message: `Successfully cleaned up ${cleanedCount} expired sessions`,
+        cleanedCount,
+        timestamp: new Date().toISOString(),
+      })
+    } catch (error) {
+      console.error('Manual cleanup error:', error)
+      res.status(500).json({
+        error: 'Cleanup failed',
+        message: 'An error occurred during manual cleanup',
+      })
+    }
+  }
+)
+
+/**
  * GET /auth/stats
  * Get authentication statistics (admin only)
  */
@@ -363,8 +692,16 @@ router.get(
   authService.middleware.requireRole(UserRole.ADMIN),
   async (req: AuthenticatedRequest, res: Response) => {
     try {
-      const stats = await userRepository.getStatistics()
-      res.json(stats)
+      const userStats = await userRepository.getStatistics()
+      const sessionStats = await sessionManager.getSessionStats()
+      const monitoringMetrics = sessionMonitor.getMetrics()
+      
+      res.json({
+        users: userStats,
+        sessions: sessionStats,
+        monitoring: monitoringMetrics,
+        timestamp: new Date().toISOString(),
+      })
     } catch (error) {
       console.error('Auth stats error:', error)
       res.status(500).json({

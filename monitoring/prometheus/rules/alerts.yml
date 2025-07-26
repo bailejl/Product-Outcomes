@@ -1,0 +1,150 @@
+groups:
+  - name: product_outcomes_alerts
+    rules:
+      # API Performance Alerts
+      - alert: HighResponseTime
+        expr: histogram_quantile(0.95, product_outcomes_http_request_duration_seconds_bucket) > 1
+        for: 2m
+        labels:
+          severity: warning
+          service: api
+        annotations:
+          summary: "High API response time"
+          description: "95th percentile response time is {{ $value }}s for {{ $labels.method }} {{ $labels.route }}"
+
+      - alert: HighErrorRate
+        expr: rate(product_outcomes_http_requests_total{status_code=~"5.."}[5m]) > 0.1
+        for: 1m
+        labels:
+          severity: critical
+          service: api
+        annotations:
+          summary: "High API error rate"
+          description: "Error rate is {{ $value | humanizePercentage }} for {{ $labels.method }} {{ $labels.route }}"
+
+      # Database Alerts
+      - alert: DatabaseConnectionsHigh
+        expr: product_outcomes_database_connections{status="active"} > 80
+        for: 2m
+        labels:
+          severity: warning
+          service: database
+        annotations:
+          summary: "High database connection count"
+          description: "Database has {{ $value }} active connections"
+
+      - alert: SlowDatabaseQueries
+        expr: histogram_quantile(0.95, product_outcomes_database_query_duration_seconds_bucket) > 2
+        for: 2m
+        labels:
+          severity: warning
+          service: database
+        annotations:
+          summary: "Slow database queries detected"
+          description: "95th percentile query time is {{ $value }}s for {{ $labels.query_type }}"
+
+      # Redis Alerts
+      - alert: RedisConnectionDown
+        expr: product_outcomes_redis_connections{status="connected"} == 0
+        for: 30s
+        labels:
+          severity: critical
+          service: redis
+        annotations:
+          summary: "Redis connection down"
+          description: "Redis instance {{ $labels.instance }} is not connected"
+
+      # System Resource Alerts
+      - alert: HighMemoryUsage
+        expr: (product_outcomes_memory_usage_bytes{type="heap_used"} / product_outcomes_memory_usage_bytes{type="heap_total"}) > 0.9
+        for: 2m
+        labels:
+          severity: warning
+          service: system
+        annotations:
+          summary: "High memory usage"
+          description: "Memory usage is {{ $value | humanizePercentage }}"
+
+      - alert: HighCPUUsage
+        expr: product_outcomes_cpu_usage_percent{type="total"} > 80
+        for: 5m
+        labels:
+          severity: warning
+          service: system
+        annotations:
+          summary: "High CPU usage"
+          description: "CPU usage is {{ $value }}%"
+
+      # Business Logic Alerts
+      - alert: LowOKRProgress
+        expr: avg(product_outcomes_okr_progress_percent) by (organization_id) < 30
+        for: 1d
+        labels:
+          severity: info
+          service: business
+        annotations:
+          summary: "Low OKR progress in organization"
+          description: "Average OKR progress is {{ $value }}% for organization {{ $labels.organization_id }}"
+
+      - alert: HighUserChurn
+        expr: rate(product_outcomes_user_registrations_total[1d]) - rate(product_outcomes_active_users[1d]) > 10
+        for: 1d
+        labels:
+          severity: warning
+          service: business
+        annotations:
+          summary: "High user churn detected"
+          description: "User churn rate is high with {{ $value }} net loss per day"
+
+      # GraphQL Alerts
+      - alert: GraphQLHighErrorRate
+        expr: rate(product_outcomes_graphql_operations_total{status="error"}[5m]) / rate(product_outcomes_graphql_operations_total[5m]) > 0.05
+        for: 2m
+        labels:
+          severity: warning
+          service: graphql
+        annotations:
+          summary: "High GraphQL error rate"
+          description: "GraphQL error rate is {{ $value | humanizePercentage }}"
+
+      - alert: GraphQLSlowOperations
+        expr: histogram_quantile(0.95, product_outcomes_graphql_operation_duration_seconds_bucket) > 3
+        for: 2m
+        labels:
+          severity: warning
+          service: graphql
+        annotations:
+          summary: "Slow GraphQL operations"
+          description: "95th percentile GraphQL operation time is {{ $value }}s"
+
+      # WebSocket Alerts
+      - alert: WebSocketConnectionsDrop
+        expr: increase(product_outcomes_websocket_connections[5m]) < -10
+        for: 1m
+        labels:
+          severity: warning
+          service: websocket
+        annotations:
+          summary: "WebSocket connections dropping"
+          description: "WebSocket connections dropped by {{ $value }} in the last 5 minutes"
+
+      # Application Health
+      - alert: ApplicationDown
+        expr: up{job="product-outcomes-api"} == 0
+        for: 30s
+        labels:
+          severity: critical
+          service: api
+        annotations:
+          summary: "Application is down"
+          description: "Product Outcomes API is not responding"
+
+      - alert: UnhandledErrors
+        expr: rate(product_outcomes_unhandled_errors_total[5m]) > 0
+        for: 1m
+        labels:
+          severity: critical
+          service: api
+        annotations:
+          summary: "Unhandled errors detected"
+          description: "{{ $value }} unhandled errors per second of type {{ $labels.type }}"

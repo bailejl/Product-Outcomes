@@ -40,6 +40,7 @@ export class AuthMiddleware {
         lastName: '',
         isActive: true,
         emailVerified: true,
+        loginAttempts: 0,
         createdAt: new Date(),
         updatedAt: new Date(),
       }
@@ -118,6 +119,7 @@ export class AuthMiddleware {
         lastName: '',
         isActive: true,
         emailVerified: true,
+        loginAttempts: 0,
         createdAt: new Date(),
         updatedAt: new Date(),
       }

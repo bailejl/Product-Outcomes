@@ -5,9 +5,12 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   Index,
+  ManyToMany,
+  JoinTable,
 } from 'typeorm'
+import { UserRole } from '@product-outcomes/shared-models'
 
-export enum UserRole {
+export enum LegacyUserRole {
   ADMIN = 'admin',
   USER = 'user',
   MODERATOR = 'moderator',
@@ -33,10 +36,19 @@ export class User {
 
   @Column({
     type: 'enum',
-    enum: UserRole,
-    default: UserRole.USER,
+    enum: LegacyUserRole,
+    default: LegacyUserRole.USER,
+    nullable: true,
   })
-  role: UserRole
+  legacyRole?: LegacyUserRole
+
+  @ManyToMany(() => UserRole, { eager: true })
+  @JoinTable({
+    name: 'user_role_assignments',
+    joinColumn: { name: 'user_id', referencedColumnName: 'id' },
+    inverseJoinColumn: { name: 'role_id', referencedColumnName: 'id' },
+  })
+  roles: UserRole[]
 
   @Column({ name: 'is_active', default: true })
   isActive: boolean
@@ -132,6 +144,76 @@ export class User {
   verifyEmail(): void {
     this.emailVerified = true
     this.emailVerificationToken = undefined
+  }
+
+  // Role-based authorization methods
+  hasRole(roleName: string): boolean {
+    return this.roles?.some(role => role.name === roleName && role.isActive) || false
+  }
+
+  hasAnyRole(roleNames: string[]): boolean {
+    return roleNames.some(roleName => this.hasRole(roleName))
+  }
+
+  hasAllRoles(roleNames: string[]): boolean {
+    return roleNames.every(roleName => this.hasRole(roleName))
+  }
+
+  hasPermission(permission: string): boolean {
+    return this.roles?.some(role => 
+      role.isActive && role.hasPermission(permission as any)
+    ) || false
+  }
+
+  hasAnyPermission(permissions: string[]): boolean {
+    return permissions.some(permission => this.hasPermission(permission))
+  }
+
+  hasAllPermissions(permissions: string[]): boolean {
+    return permissions.every(permission => this.hasPermission(permission))
+  }
+
+  addRole(role: UserRole): void {
+    if (!this.roles) {
+      this.roles = []
+    }
+    if (!this.hasRole(role.name)) {
+      this.roles.push(role)
+    }
+  }
+
+  removeRole(roleName: string): void {
+    if (this.roles) {
+      this.roles = this.roles.filter(role => role.name !== roleName)
+    }
+  }
+
+  // Get all permissions from all assigned roles
+  getAllPermissions(): string[] {
+    if (!this.roles) return []
+    
+    const permissions = new Set<string>()
+    this.roles
+      .filter(role => role.isActive)
+      .forEach(role => {
+        role.permissions.forEach(permission => permissions.add(permission))
+      })
+    
+    return Array.from(permissions)
+  }
+
+  // Check if user is admin (has admin role or admin permissions)
+  isAdmin(): boolean {
+    return this.hasRole('Administrator') || 
+           this.hasPermission('system:config') ||
+           this.legacyRole === LegacyUserRole.ADMIN
+  }
+
+  // Check if user is moderator
+  isModerator(): boolean {
+    return this.hasRole('Moderator') || 
+           this.hasPermission('moderate:message') ||
+           this.legacyRole === LegacyUserRole.MODERATOR
   }
 
   // Private method to generate random tokens

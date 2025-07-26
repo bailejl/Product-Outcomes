@@ -2,6 +2,13 @@ import 'reflect-metadata'
 import { DataSource } from 'typeorm'
 import { Message } from './entities/message'
 import { User } from './entities/user'
+import { Organization } from './entities/organization'
+import { OKR } from './entities/okr'
+import { KeyResult } from './entities/key-result'
+import { OKRComment } from './entities/okr-comment'
+import { UserPresence } from './entities/user-presence'
+import { Notification } from './entities/notification'
+import { UserRole } from '../../../../libs/shared/models/src/lib/entities/user-role.entity'
 
 export const AppDataSource = new DataSource({
   type: 'postgres',
@@ -12,7 +19,7 @@ export const AppDataSource = new DataSource({
   database: process.env.DB_NAME || 'product_outcomes',
   synchronize: process.env.NODE_ENV === 'development',
   logging: process.env.NODE_ENV === 'development',
-  entities: [Message, User],
+  entities: [Message, User, UserRole, Organization, OKR, KeyResult, OKRComment, UserPresence, Notification],
   migrations: ['src/migrations/*.ts'],
   subscribers: ['src/subscribers/*.ts'],
 })

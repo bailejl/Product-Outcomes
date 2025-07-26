@@ -79,6 +79,7 @@ describe('AuthService', () => {
         role: 'user',
         isActive: true,
         emailVerified: false,
+        loginAttempts: 0,
       })
       expect(result.user).toEqual(mockUser)
       expect(result.tokens.accessToken).toBeDefined()

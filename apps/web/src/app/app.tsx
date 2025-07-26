@@ -1,8 +1,13 @@
-// Hello World Web Application with TailwindCSS and Authentication
+// Hello World Web Application with TailwindCSS, Authentication, and GraphQL
 import { useState } from 'react'
 import { HelloWorld } from '@product-outcomes/ui'
 import { AuthProvider, useAuth } from '../contexts/AuthContext'
 import { AuthModal, UserMenu, ProtectedRoute } from '../components/auth'
+import { GluestackUIProvider } from '@gluestack-ui/themed'
+import { config } from '../config/gluestack-ui'
+import { ApolloProvider } from '@apollo/client'
+import { apolloClient } from '../lib/apollo-client'
+import { GraphQLErrorBoundary } from '../components/GraphQLErrorBoundary'
 import '../styles/tailwind.css'
 
 function AppContent() {
@@ -146,9 +151,15 @@ function AppContent() {
 
 export function App() {
   return (
-    <AuthProvider>
-      <AppContent />
-    </AuthProvider>
+    <ApolloProvider client={apolloClient}>
+      <GraphQLErrorBoundary>
+        <GluestackUIProvider config={config}>
+          <AuthProvider>
+            <AppContent />
+          </AuthProvider>
+        </GluestackUIProvider>
+      </GraphQLErrorBoundary>
+    </ApolloProvider>
   )
 }
 

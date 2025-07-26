@@ -1,20 +1,35 @@
 import React, { useState, useEffect } from 'react'
 import { LoginForm } from './LoginForm'
 import { RegisterForm } from './RegisterForm'
+import { ForgotPasswordForm } from './ForgotPasswordForm'
+import { ResetPasswordForm } from './ResetPasswordForm'
 import { useAuth } from '../../contexts/AuthContext'
+import {
+  Modal,
+  ModalBackdrop,
+  ModalContent,
+  ModalHeader,
+  ModalCloseButton,
+  ModalBody,
+  Button,
+  ButtonText,
+  CloseIcon,
+} from '@gluestack-ui/themed'
 
 interface AuthModalProps {
   isOpen: boolean
   onClose: () => void
-  initialMode?: 'login' | 'register'
+  initialMode?: 'login' | 'register' | 'forgot-password' | 'reset-password'
+  resetToken?: string
 }
 
 export function AuthModal({
   isOpen,
   onClose,
   initialMode = 'login',
+  resetToken,
 }: AuthModalProps) {
-  const [mode, setMode] = useState<'login' | 'register'>(initialMode)
+  const [mode, setMode] = useState<'login' | 'register' | 'forgot-password' | 'reset-password'>(initialMode)
   const { clearError } = useAuth()
 
   useEffect(() => {
@@ -57,8 +72,23 @@ export function AuthModal({
   if (!isOpen) return null
 
   const handleToggleMode = () => {
-    setMode(mode === 'login' ? 'register' : 'login')
+    if (mode === 'login') {
+      setMode('forgot-password')
+    } else if (mode === 'register') {
+      setMode('login')
+    } else if (mode === 'forgot-password') {
+      setMode('login')
+    } else if (mode === 'reset-password') {
+      setMode('login')
+    } else {
+      setMode('login')
+    }
     clearError() // Clear error when switching forms
+  }
+
+  const handleModeSwitch = (newMode: 'login' | 'register' | 'forgot-password' | 'reset-password') => {
+    setMode(newMode)
+    clearError()
   }
 
   const handleSuccess = () => {
@@ -72,51 +102,46 @@ export function AuthModal({
   }
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50"
-      onClick={handleBackdropClick}
-      data-testid="modal-backdrop"
-    >
-      <div 
-        className="relative w-full max-w-md"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby={`${mode}-modal-title`}
-        data-testid="auth-modal"
-      >
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 z-10 p-2 text-gray-400 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-full"
-          data-testid="close-modal"
-          aria-label="Close modal"
-        >
-          <svg
-            className="w-6 h-6"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M6 18L18 6M6 6l12 12"
-            />
-          </svg>
-        </button>
+    <Modal isOpen={isOpen} onClose={onClose} size="md">
+      <ModalBackdrop onPress={onClose} testID="modal-backdrop" />
+      <ModalContent maxWidth="$96" testID="auth-modal">
+        <ModalHeader>
+          <ModalCloseButton onPress={onClose} testID="close-modal">
+            <CloseIcon />
+          </ModalCloseButton>
+        </ModalHeader>
+        <ModalBody p="$0">
 
-        {mode === 'login' ? (
+        {mode === 'login' && (
           <LoginForm
-            onToggleMode={handleToggleMode}
-            onSuccess={handleSuccess}
-          />
-        ) : (
-          <RegisterForm
-            onToggleMode={handleToggleMode}
+            onToggleMode={() => handleModeSwitch('forgot-password')}
             onSuccess={handleSuccess}
           />
         )}
-      </div>
-    </div>
+        
+        {mode === 'register' && (
+          <RegisterForm
+            onToggleMode={() => handleModeSwitch('login')}
+            onSuccess={handleSuccess}
+          />
+        )}
+        
+        {mode === 'forgot-password' && (
+          <ForgotPasswordForm
+            onSuccess={() => handleModeSwitch('login')}
+            onBackToLogin={() => handleModeSwitch('login')}
+          />
+        )}
+        
+        {mode === 'reset-password' && (
+          <ResetPasswordForm
+            token={resetToken}
+            onSuccess={() => handleModeSwitch('login')}
+            onBackToLogin={() => handleModeSwitch('login')}
+          />
+        )}
+        </ModalBody>
+      </ModalContent>
+    </Modal>
   )
 }

@@ -1,5 +1,33 @@
 import React, { useState } from 'react'
 import { useAuth } from '../../contexts/AuthContext'
+import {
+  Box,
+  VStack,
+  HStack,
+  Text,
+  Heading,
+  Button,
+  ButtonText,
+  Input,
+  InputField,
+  FormControl,
+  FormControlLabel,
+  FormControlLabelText,
+  FormControlError,
+  FormControlErrorText,
+  Spinner,
+  Select,
+  SelectTrigger,
+  SelectInput,
+  SelectIcon,
+  SelectPortal,
+  SelectBackdrop,
+  SelectContent,
+  SelectDragIndicatorWrapper,
+  SelectDragIndicator,
+  SelectItem,
+} from '@gluestack-ui/themed'
+import { ChevronDownIcon } from '@gluestack-ui/themed'
 
 interface RegisterFormProps {
   onToggleMode?: () => void
@@ -14,10 +42,11 @@ export function RegisterForm({ onToggleMode, onSuccess }: RegisterFormProps) {
     email: '',
     password: '',
     confirmPassword: '',
+    role: 'user' as 'admin' | 'user' | 'moderator',
   })
   const [errors, setErrors] = useState<Record<string, string>>({})
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement> | { target: { name: string; value: string } }) => {
     const { name, value } = e.target
     setFormData(prev => ({
       ...prev,
@@ -27,6 +56,18 @@ export function RegisterForm({ onToggleMode, onSuccess }: RegisterFormProps) {
     // Clear error when user starts typing
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: '' }))
+    }
+  }
+
+  const handleSelectChange = (value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      role: value as 'admin' | 'user' | 'moderator',
+    }))
+
+    // Clear error when user makes a selection
+    if (errors.role) {
+      setErrors(prev => ({ ...prev, role: '' }))
     }
   }
 
@@ -79,6 +120,7 @@ export function RegisterForm({ onToggleMode, onSuccess }: RegisterFormProps) {
         lastName: formData.lastName.trim(),
         email: formData.email,
         password: formData.password,
+        role: formData.role,
       })
       onSuccess?.()
     } catch (error) {
@@ -87,186 +129,216 @@ export function RegisterForm({ onToggleMode, onSuccess }: RegisterFormProps) {
   }
 
   return (
-    <div className="w-full max-w-md mx-auto" data-testid="register-form">
-      <div className="bg-white shadow-lg rounded-lg px-8 py-6">
-        <div className="text-center mb-6">
-          <h2 id="register-modal-title" className="text-2xl font-bold text-gray-900">Create Account</h2>
-          <p className="text-gray-600 mt-2">Sign up for a new account</p>
-        </div>
+    <Box w="$full" maxWidth="$96" mx="$auto" testID="register-form">
+      <Box bg="$white" shadowColor="$black" shadowOffset={{ width: 0, height: 2 }} shadowOpacity={0.1} shadowRadius={8} borderRadius="$lg" px="$8" py="$6">
+        <VStack space="$6">
+          <VStack space="$2" alignItems="center">
+            <Heading id="register-modal-title" size="2xl" color="$secondary900">Create Account</Heading>
+            <Text color="$secondary600" textAlign="center">Sign up for a new account</Text>
+          </VStack>
 
-        {state.error && (
-          <div className="mb-4 p-3 rounded-md bg-red-50 border border-red-200">
-            <p className="text-sm text-red-600">{state.error}</p>
-          </div>
-        )}
+          {state.error && (
+            <Box bg="$error50" borderColor="$error200" borderWidth={1} borderRadius="$md" p="$3">
+              <Text size="sm" color="$error600">{state.error}</Text>
+            </Box>
+          )}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label
-                htmlFor="firstName"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                First Name
-              </label>
-              <input
-                type="text"
-                id="firstName"
-                name="firstName"
-                value={formData.firstName}
-                onChange={handleChange}
-                className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
-                  errors.firstName ? 'border-red-300' : 'border-gray-300'
-                }`}
-                placeholder="First name"
-                autoComplete="given-name"
-                data-testid="register-firstName"
-              />
-              {errors.firstName && (
-                <p className="mt-1 text-sm text-red-600">{errors.firstName}</p>
+          <VStack space="$4" as="form" onSubmit={handleSubmit}>
+            <HStack space="$4">
+              <FormControl flex={1} isInvalid={!!errors.firstName}>
+                <FormControlLabel>
+                  <FormControlLabelText color="$secondary700" size="sm" fontWeight="$medium">
+                    First Name
+                  </FormControlLabelText>
+                </FormControlLabel>
+                <Input variant="outline" size="md">
+                  <InputField
+                    type="text"
+                    id="firstName"
+                    value={formData.firstName}
+                    onChangeText={(value) => handleChange({ target: { name: 'firstName', value } } as any)}
+                    placeholder="First name"
+                    autoComplete="given-name"
+                    testID="register-firstName"
+                  />
+                </Input>
+                <FormControlError>
+                  <FormControlErrorText size="sm">
+                    {errors.firstName}
+                  </FormControlErrorText>
+                </FormControlError>
+              </FormControl>
+
+              <FormControl flex={1} isInvalid={!!errors.lastName}>
+                <FormControlLabel>
+                  <FormControlLabelText color="$secondary700" size="sm" fontWeight="$medium">
+                    Last Name
+                  </FormControlLabelText>
+                </FormControlLabel>
+                <Input variant="outline" size="md">
+                  <InputField
+                    type="text"
+                    id="lastName"
+                    value={formData.lastName}
+                    onChangeText={(value) => handleChange({ target: { name: 'lastName', value } } as any)}
+                    placeholder="Last name"
+                    autoComplete="family-name"
+                    testID="register-lastName"
+                  />
+                </Input>
+                <FormControlError>
+                  <FormControlErrorText size="sm">
+                    {errors.lastName}
+                  </FormControlErrorText>
+                </FormControlError>
+              </FormControl>
+            </HStack>
+
+            <FormControl isInvalid={!!errors.email}>
+              <FormControlLabel>
+                <FormControlLabelText color="$secondary700" size="sm" fontWeight="$medium">
+                  Email Address
+                </FormControlLabelText>
+              </FormControlLabel>
+              <Input variant="outline" size="md">
+                <InputField
+                  type="email"
+                  id="email"
+                  value={formData.email}
+                  onChangeText={(value) => handleChange({ target: { name: 'email', value } } as any)}
+                  placeholder="Enter your email"
+                  autoComplete="email"
+                  testID="register-email"
+                />
+              </Input>
+              <FormControlError>
+                <FormControlErrorText size="sm">
+                  {errors.email}
+                </FormControlErrorText>
+              </FormControlError>
+            </FormControl>
+
+            <FormControl isInvalid={!!errors.role}>
+              <FormControlLabel>
+                <FormControlLabelText color="$secondary700" size="sm" fontWeight="$medium">
+                  Account Type
+                </FormControlLabelText>
+              </FormControlLabel>
+              <Select selectedValue={formData.role} onValueChange={handleSelectChange}>
+                <SelectTrigger variant="outline" size="md">
+                  <SelectInput placeholder="Select your role" />
+                  <SelectIcon mr="$3">
+                    <ChevronDownIcon />
+                  </SelectIcon>
+                </SelectTrigger>
+                <SelectPortal>
+                  <SelectBackdrop />
+                  <SelectContent>
+                    <SelectDragIndicatorWrapper>
+                      <SelectDragIndicator />
+                    </SelectDragIndicatorWrapper>
+                    <SelectItem label="User" value="user" />
+                    <SelectItem label="Moderator" value="moderator" />
+                    <SelectItem label="Administrator" value="admin" />
+                  </SelectContent>
+                </SelectPortal>
+              </Select>
+              <FormControlError>
+                <FormControlErrorText size="sm">
+                  {errors.role}
+                </FormControlErrorText>
+              </FormControlError>
+            </FormControl>
+
+            <FormControl isInvalid={!!errors.password}>
+              <FormControlLabel>
+                <FormControlLabelText color="$secondary700" size="sm" fontWeight="$medium">
+                  Password
+                </FormControlLabelText>
+              </FormControlLabel>
+              <Input variant="outline" size="md">
+                <InputField
+                  type="password"
+                  id="password"
+                  value={formData.password}
+                  onChangeText={(value) => handleChange({ target: { name: 'password', value } } as any)}
+                  placeholder="Create a password"
+                  autoComplete="new-password"
+                  testID="register-password"
+                />
+              </Input>
+              <FormControlError>
+                <FormControlErrorText size="sm">
+                  {errors.password}
+                </FormControlErrorText>
+              </FormControlError>
+              <Text size="xs" color="$secondary500" mt="$1">
+                Must be at least 8 characters with uppercase, lowercase, and numbers
+              </Text>
+            </FormControl>
+
+            <FormControl isInvalid={!!errors.confirmPassword}>
+              <FormControlLabel>
+                <FormControlLabelText color="$secondary700" size="sm" fontWeight="$medium">
+                  Confirm Password
+                </FormControlLabelText>
+              </FormControlLabel>
+              <Input variant="outline" size="md">
+                <InputField
+                  type="password"
+                  id="confirmPassword"
+                  value={formData.confirmPassword}
+                  onChangeText={(value) => handleChange({ target: { name: 'confirmPassword', value } } as any)}
+                  placeholder="Confirm your password"
+                  autoComplete="new-password"
+                  testID="register-confirmPassword"
+                />
+              </Input>
+              <FormControlError>
+                <FormControlErrorText size="sm">
+                  {errors.confirmPassword}
+                </FormControlErrorText>
+              </FormControlError>
+            </FormControl>
+
+            <Button
+              variant="solid"
+              size="md"
+              w="$full"
+              isDisabled={state.isLoading}
+              onPress={handleSubmit}
+              testID="register-submit"
+            >
+              {state.isLoading ? (
+                <HStack space="$2" alignItems="center">
+                  <Spinner size="small" color="$white" />
+                  <ButtonText>Creating account...</ButtonText>
+                </HStack>
+              ) : (
+                <ButtonText>Create Account</ButtonText>
               )}
-            </div>
+            </Button>
+          </VStack>
 
-            <div>
-              <label
-                htmlFor="lastName"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Last Name
-              </label>
-              <input
-                type="text"
-                id="lastName"
-                name="lastName"
-                value={formData.lastName}
-                onChange={handleChange}
-                className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
-                  errors.lastName ? 'border-red-300' : 'border-gray-300'
-                }`}
-                placeholder="Last name"
-                autoComplete="family-name"
-                data-testid="register-lastName"
-              />
-              {errors.lastName && (
-                <p className="mt-1 text-sm text-red-600">{errors.lastName}</p>
-              )}
-            </div>
-          </div>
-
-          <div>
-            <label
-              htmlFor="email"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
-              Email Address
-            </label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
-                errors.email ? 'border-red-300' : 'border-gray-300'
-              }`}
-              placeholder="Enter your email"
-              autoComplete="email"
-              data-testid="register-email"
-            />
-            {errors.email && (
-              <p className="mt-1 text-sm text-red-600">{errors.email}</p>
-            )}
-          </div>
-
-          <div>
-            <label
-              htmlFor="password"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
-              Password
-            </label>
-            <input
-              type="password"
-              id="password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
-                errors.password ? 'border-red-300' : 'border-gray-300'
-              }`}
-              placeholder="Create a password"
-              autoComplete="new-password"
-              data-testid="register-password"
-            />
-            {errors.password && (
-              <p className="mt-1 text-sm text-red-600">{errors.password}</p>
-            )}
-            <p className="mt-1 text-xs text-gray-500">
-              Must be at least 8 characters with uppercase, lowercase, and
-              numbers
-            </p>
-          </div>
-
-          <div>
-            <label
-              htmlFor="confirmPassword"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
-              Confirm Password
-            </label>
-            <input
-              type="password"
-              id="confirmPassword"
-              name="confirmPassword"
-              value={formData.confirmPassword}
-              onChange={handleChange}
-              className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
-                errors.confirmPassword ? 'border-red-300' : 'border-gray-300'
-              }`}
-              placeholder="Confirm your password"
-              autoComplete="new-password"
-              data-testid="register-confirmPassword"
-            />
-            {errors.confirmPassword && (
-              <p className="mt-1 text-sm text-red-600">
-                {errors.confirmPassword}
-              </p>
-            )}
-          </div>
-
-          <button
-            type="submit"
-            disabled={state.isLoading}
-            className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
-            data-testid="register-submit"
-          >
-            {state.isLoading ? (
-              <div className="flex items-center">
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                Creating account...
-              </div>
-            ) : (
-              'Create Account'
-            )}
-          </button>
-        </form>
-
-        {onToggleMode && (
-          <div className="mt-6 text-center">
-            <p className="text-sm text-gray-600">
-              Already have an account?{' '}
-              <button
-                type="button"
-                onClick={onToggleMode}
-                className="font-medium text-blue-600 hover:text-blue-500"
-                data-testid="toggle-login"
-              >
-                Sign in here
-              </button>
-            </p>
-          </div>
-        )}
-      </div>
-    </div>
+          {onToggleMode && (
+            <VStack space="$2" alignItems="center">
+              <HStack space="$1" alignItems="center">
+                <Text size="sm" color="$secondary600">
+                  Already have an account?
+                </Text>
+                <Button
+                  variant="link"
+                  size="sm"
+                  onPress={onToggleMode}
+                  testID="toggle-login"
+                >
+                  <ButtonText color="$primary600" fontWeight="$medium">Sign in here</ButtonText>
+                </Button>
+              </HStack>
+            </VStack>
+          )}
+        </VStack>
+      </Box>
+    </Box>
   )
 }

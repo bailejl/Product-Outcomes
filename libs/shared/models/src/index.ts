@@ -1,0 +1,1 @@
+export * from './lib/entities/user-role.entity';

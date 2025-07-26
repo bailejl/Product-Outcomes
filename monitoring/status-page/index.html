@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Outcomes - System Status</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            background: #f8fafc;
+            color: #334155;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .header h1 {
+            color: #1e293b;
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            color: #64748b;
+            font-size: 1.1rem;
+        }
+
+        .status-card {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border-left: 4px solid #10b981;
+        }
+
+        .status-card.degraded {
+            border-left-color: #f59e0b;
+        }
+
+        .status-card.critical {
+            border-left-color: #ef4444;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 0.75rem;
+            background: #10b981;
+        }
+
+        .status-dot.degraded {
+            background: #f59e0b;
+        }
+
+        .status-dot.critical {
+            background: #ef4444;
+        }
+
+        .status-text {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .service-card {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
+        }
+
+        .service-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .service-name {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .service-status {
+            display: flex;
+            align-items: center;
+            font-size: 0.9rem;
+            color: #10b981;
+        }
+
+        .service-status.degraded {
+            color: #f59e0b;
+        }
+
+        .service-status.critical {
+            color: #ef4444;
+        }
+
+        .service-metrics {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .metric {
+            text-align: center;
+        }
+
+        .metric-value {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .metric-label {
+            font-size: 0.875rem;
+            color: #64748b;
+        }
+
+        .alerts-section {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .alerts-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .alerts-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .alert-item {
+            padding: 1rem;
+            border-left: 4px solid #64748b;
+            margin-bottom: 1rem;
+            background: #f8fafc;
+            border-radius: 4px;
+        }
+
+        .alert-item.critical {
+            border-left-color: #ef4444;
+            background: #fef2f2;
+        }
+
+        .alert-item.warning {
+            border-left-color: #f59e0b;
+            background: #fffbeb;
+        }
+
+        .alert-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .alert-description {
+            color: #64748b;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .alert-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            color: #94a3b8;
+        }
+
+        .refresh-indicator {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            background: #10b981;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .refresh-indicator.show {
+            opacity: 1;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 3rem;
+            color: #94a3b8;
+            font-size: 0.875rem;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .services-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .service-metrics {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Product Outcomes</h1>
+            <p>System Status & Service Health</p>
+        </div>
+
+        <div class="status-card" id="overallStatus">
+            <div class="status-indicator">
+                <div class="status-dot" id="statusDot"></div>
+                <div class="status-text" id="statusText">All Systems Operational</div>
+            </div>
+            <div id="statusSummary"></div>
+        </div>
+
+        <div class="services-grid" id="servicesGrid">
+            <!-- Services will be populated by JavaScript -->
+        </div>
+
+        <div class="alerts-section">
+            <div class="alerts-header">
+                <h2>Recent Alerts</h2>
+                <span id="alertsCount">0 active alerts</span>
+            </div>
+            <div class="alerts-list" id="alertsList">
+                <!-- Alerts will be populated by JavaScript -->
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>Last updated: <span id="lastUpdated"></span></p>
+            <p>Auto-refresh every 30 seconds</p>
+        </div>
+    </div>
+
+    <div class="refresh-indicator" id="refreshIndicator">
+        Refreshing...
+    </div>
+
+    <script>
+        class StatusPage {
+            constructor() {
+                this.apiBase = 'http://localhost:3001/api'
+                this.healthBase = 'http://localhost:3333/api/health'
+                this.refreshInterval = 30000 // 30 seconds
+                
+                this.init()
+            }
+
+            async init() {
+                await this.loadData()
+                this.startAutoRefresh()
+            }
+
+            async loadData() {
+                try {
+                    this.showRefreshIndicator()
+                    
+                    const [statusData, alertsData, healthData] = await Promise.all([
+                        this.fetchAPI(`${this.apiBase}/status`),
+                        this.fetchAPI(`${this.apiBase}/alerts?limit=10`),
+                        this.fetchAPI(this.healthBase)
+                    ])
+
+                    this.updateOverallStatus(statusData, healthData)
+                    this.updateServices(healthData)
+                    this.updateAlerts(alertsData)
+                    this.updateLastUpdated()
+                    
+                } catch (error) {
+                    console.error('Failed to load data:', error)
+                    this.showError()
+                } finally {
+                    this.hideRefreshIndicator()
+                }
+            }
+
+            async fetchAPI(url) {
+                const response = await fetch(url)
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`)
+                }
+                return response.json()
+            }
+
+            updateOverallStatus(statusData, healthData) {
+                const statusCard = document.getElementById('overallStatus')
+                const statusDot = document.getElementById('statusDot')
+                const statusText = document.getElementById('statusText')
+                const statusSummary = document.getElementById('statusSummary')
+
+                const status = healthData?.status || statusData?.status || 'unknown'
+                
+                // Reset classes
+                statusCard.className = 'status-card'
+                statusDot.className = 'status-dot'
+
+                let statusMessage = 'All Systems Operational'
+                let summaryHTML = ''
+
+                if (status === 'critical' || status === 'unhealthy') {
+                    statusCard.classList.add('critical')
+                    statusDot.classList.add('critical')
+                    statusMessage = 'Service Disruption'
+                    summaryHTML = `<p>We're experiencing critical issues. Our team is working to resolve them.</p>`
+                } else if (status === 'degraded') {
+                    statusCard.classList.add('degraded')
+                    statusDot.classList.add('degraded')
+                    statusMessage = 'Degraded Performance'
+                    summaryHTML = `<p>Some services are experiencing performance issues.</p>`
+                }
+
+                if (statusData && statusData.active_alerts > 0) {
+                    summaryHTML += `<p><strong>${statusData.active_alerts}</strong> active alerts (${statusData.critical_alerts} critical, ${statusData.warning_alerts} warnings)</p>`
+                }
+
+                statusText.textContent = statusMessage
+                statusSummary.innerHTML = summaryHTML
+            }
+
+            updateServices(healthData) {
+                const servicesGrid = document.getElementById('servicesGrid')
+                
+                if (!healthData || !healthData.services) {
+                    servicesGrid.innerHTML = '<p>Unable to load service status</p>'
+                    return
+                }
+
+                const services = [
+                    { name: 'API Server', key: 'database', icon: '🚀' },
+                    { name: 'Database', key: 'database', icon: '🗄️' },
+                    { name: 'Redis Cache', key: 'redis', icon: '⚡' },
+                    { name: 'GraphQL', key: 'graphql', icon: '🎮' },
+                    { name: 'WebSocket', key: 'websocket', icon: '🔌' },
+                    { name: 'Email Service', key: 'email', icon: '📧' },
+                    { name: 'File Storage', key: 'storage', icon: '📁' }
+                ]
+
+                servicesGrid.innerHTML = services.map(service => {
+                    const serviceData = healthData.services[service.key] || { status: 'unknown', responseTime: 0 }
+                    const status = serviceData.status
+                    const responseTime = Math.round(serviceData.responseTime || 0)
+                    
+                    return `
+                        <div class="service-card">
+                            <div class="service-header">
+                                <div class="service-name">${service.icon} ${service.name}</div>
+                                <div class="service-status ${status}">${status.toUpperCase()}</div>
+                            </div>
+                            <div class="service-metrics">
+                                <div class="metric">
+                                    <div class="metric-value">${responseTime}ms</div>
+                                    <div class="metric-label">Response Time</div>
+                                </div>
+                                <div class="metric">
+                                    <div class="metric-value">${this.getUptimePercentage(status)}</div>
+                                    <div class="metric-label">Uptime</div>
+                                </div>
+                            </div>
+                        </div>
+                    `
+                }).join('')
+            }
+
+            updateAlerts(alertsData) {
+                const alertsList = document.getElementById('alertsList')
+                const alertsCount = document.getElementById('alertsCount')
+                
+                if (!alertsData || !alertsData.alerts) {
+                    alertsList.innerHTML = '<p>No recent alerts</p>'
+                    alertsCount.textContent = '0 active alerts'
+                    return
+                }
+
+                const alerts = alertsData.alerts
+                const activeAlerts = alerts.filter(alert => alert.status === 'firing')
+                
+                alertsCount.textContent = `${activeAlerts.length} active alerts`
+
+                if (alerts.length === 0) {
+                    alertsList.innerHTML = '<p>No recent alerts</p>'
+                    return
+                }
+
+                alertsList.innerHTML = alerts.slice(0, 10).map(alert => {
+                    const severity = alert.labels?.severity || 'info'
+                    const time = new Date(alert.startsAt || alert.receivedAt).toLocaleString()
+                    
+                    return `
+                        <div class="alert-item ${severity}">
+                            <div class="alert-title">${alert.annotations?.summary || 'Unknown Alert'}</div>
+                            <div class="alert-description">${alert.annotations?.description || 'No description'}</div>
+                            <div class="alert-meta">
+                                <span>Severity: ${severity.toUpperCase()}</span>
+                                <span>${time}</span>
+                            </div>
+                        </div>
+                    `
+                }).join('')
+            }
+
+            getUptimePercentage(status) {
+                // Simplified uptime calculation
+                if (status === 'healthy') return '99.9%'
+                if (status === 'degraded') return '95.0%'
+                if (status === 'unhealthy') return '0.0%'
+                return 'N/A'
+            }
+
+            updateLastUpdated() {
+                document.getElementById('lastUpdated').textContent = new Date().toLocaleString()
+            }
+
+            showRefreshIndicator() {
+                document.getElementById('refreshIndicator').classList.add('show')
+            }
+
+            hideRefreshIndicator() {
+                setTimeout(() => {
+                    document.getElementById('refreshIndicator').classList.remove('show')
+                }, 1000)
+            }
+
+            showError() {
+                const statusCard = document.getElementById('overallStatus')
+                statusCard.className = 'status-card critical'
+                document.getElementById('statusDot').className = 'status-dot critical'
+                document.getElementById('statusText').textContent = 'Status Page Error'
+                document.getElementById('statusSummary').innerHTML = '<p>Unable to fetch current status. Please try refreshing the page.</p>'
+            }
+
+            startAutoRefresh() {
+                setInterval(() => {
+                    this.loadData()
+                }, this.refreshInterval)
+            }
+        }
+
+        // Initialize the status page when DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            new StatusPage()
+        })
+    </script>
+</body>
+</html>

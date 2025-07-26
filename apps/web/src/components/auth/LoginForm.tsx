@@ -1,5 +1,27 @@
 import React, { useState } from 'react'
 import { useAuth } from '../../contexts/AuthContext'
+import {
+  Box,
+  VStack,
+  HStack,
+  Text,
+  Heading,
+  Button,
+  ButtonText,
+  Input,
+  InputField,
+  Checkbox,
+  CheckboxIndicator,
+  CheckboxIcon,
+  CheckboxLabel,
+  FormControl,
+  FormControlLabel,
+  FormControlLabelText,
+  FormControlError,
+  FormControlErrorText,
+  Spinner,
+} from '@gluestack-ui/themed'
+import { CheckIcon } from '@gluestack-ui/themed'
 
 interface LoginFormProps {
   onToggleMode?: () => void
@@ -61,141 +83,153 @@ export function LoginForm({ onToggleMode, onSuccess }: LoginFormProps) {
   }
 
   return (
-    <div className="w-full max-w-md mx-auto" data-testid="login-form">
-      <div className="bg-white shadow-lg rounded-lg px-8 py-6">
-        <div className="text-center mb-6">
-          <h2 id="login-modal-title" className="text-2xl font-bold text-gray-900">Welcome Back</h2>
-          <p className="text-gray-600 mt-2">Sign in to your account</p>
-        </div>
+    <Box w="$full" maxWidth="$96" mx="$auto" testID="login-form">
+      <Box bg="$white" shadowColor="$black" shadowOffset={{ width: 0, height: 2 }} shadowOpacity={0.1} shadowRadius={8} borderRadius="$lg" px="$8" py="$6">
+        <VStack space="$6">
+          <VStack space="$2" alignItems="center">
+            <Heading id="login-modal-title" size="2xl" color="$secondary900">Welcome Back</Heading>
+            <Text color="$secondary600" textAlign="center">Sign in to your account</Text>
+          </VStack>
 
-        {state.isLoading && (
-          <div className="mb-4 p-3 rounded-md bg-blue-50 border border-blue-200">
-            <p className="text-sm text-blue-600">Loading...</p>
-          </div>
-        )}
+          {state.isLoading && (
+            <Box bg="$primary50" borderColor="$primary200" borderWidth={1} borderRadius="$md" p="$3">
+              <HStack space="$2" alignItems="center">
+                <Spinner size="small" color="$primary600" />
+                <Text size="sm" color="$primary600">Loading...</Text>
+              </HStack>
+            </Box>
+          )}
 
-        {state.error && (
-          <div className="mb-4 p-3 rounded-md bg-red-50 border border-red-200">
-            <p className="text-sm text-red-600">{state.error}</p>
-          </div>
-        )}
+          {state.error && (
+            <Box bg="$error50" borderColor="$error200" borderWidth={1} borderRadius="$md" p="$3">
+              <Text size="sm" color="$error600">{state.error}</Text>
+            </Box>
+          )}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label
-              htmlFor="email"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
-              Email Address
-            </label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              disabled={state.isLoading}
-              className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
-                errors.email ? 'border-red-300' : 'border-gray-300'
-              }`}
-              placeholder="Enter your email"
-              autoComplete="email"
-              data-testid="login-email"
-            />
-            {errors.email && (
-              <p className="mt-1 text-sm text-red-600">{errors.email}</p>
-            )}
-          </div>
-
-          <div>
-            <label
-              htmlFor="password"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
-              Password
-            </label>
-            <input
-              type="password"
-              id="password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              disabled={state.isLoading}
-              className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
-                errors.password ? 'border-red-300' : 'border-gray-300'
-              }`}
-              placeholder="Enter your password"
-              autoComplete="current-password"
-              data-testid="login-password"
-            />
-            {errors.password && (
-              <p className="mt-1 text-sm text-red-600">{errors.password}</p>
-            )}
-          </div>
-
-          <div className="flex items-center justify-between">
-            <div className="flex items-center">
-              <input
-                type="checkbox"
-                id="rememberMe"
-                name="rememberMe"
-                checked={formData.rememberMe}
-                onChange={handleChange}
-                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                data-testid="login-remember"
-              />
-              <label
-                htmlFor="rememberMe"
-                className="ml-2 block text-sm text-gray-700"
+          <VStack space="$4" as="form" onSubmit={handleSubmit}>
+            <FormControl isInvalid={!!errors.email}>
+              <FormControlLabel>
+                <FormControlLabelText color="$secondary700" size="sm" fontWeight="$medium">
+                  Email Address
+                </FormControlLabelText>
+              </FormControlLabel>
+              <Input
+                variant="outline"
+                size="md"
+                isDisabled={state.isLoading}
               >
-                Remember me
-              </label>
-            </div>
-            <button
-              type="button"
-              className="text-sm text-blue-600 hover:text-blue-500"
-              onClick={() => {
-                // TODO: Implement forgot password
-                console.log('Forgot password clicked')
-              }}
-            >
-              Forgot password?
-            </button>
-          </div>
+                <InputField
+                  type="email"
+                  id="email"
+                  value={formData.email}
+                  onChangeText={(value) => handleChange({ target: { name: 'email', value, type: 'email' } } as any)}
+                  placeholder="Enter your email"
+                  autoComplete="email"
+                  testID="login-email"
+                />
+              </Input>
+              <FormControlError>
+                <FormControlErrorText size="sm">
+                  {errors.email}
+                </FormControlErrorText>
+              </FormControlError>
+            </FormControl>
 
-          <button
-            type="submit"
-            disabled={state.isLoading}
-            className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
-            data-testid="login-submit"
-          >
-            {state.isLoading ? (
-              <div className="flex items-center">
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                Signing in...
-              </div>
-            ) : (
-              'Sign In'
-            )}
-          </button>
-        </form>
-
-        {onToggleMode && (
-          <div className="mt-6 text-center">
-            <p className="text-sm text-gray-600">
-              Don't have an account?{' '}
-              <button
-                type="button"
-                onClick={onToggleMode}
-                className="font-medium text-blue-600 hover:text-blue-500"
-                data-testid="toggle-register"
+            <FormControl isInvalid={!!errors.password}>
+              <FormControlLabel>
+                <FormControlLabelText color="$secondary700" size="sm" fontWeight="$medium">
+                  Password
+                </FormControlLabelText>
+              </FormControlLabel>
+              <Input
+                variant="outline"
+                size="md"
+                isDisabled={state.isLoading}
               >
-                Sign up here
-              </button>
-            </p>
-          </div>
-        )}
-      </div>
-    </div>
+                <InputField
+                  type="password"
+                  id="password"
+                  value={formData.password}
+                  onChangeText={(value) => handleChange({ target: { name: 'password', value, type: 'password' } } as any)}
+                  placeholder="Enter your password"
+                  autoComplete="current-password"
+                  testID="login-password"
+                />
+              </Input>
+              <FormControlError>
+                <FormControlErrorText size="sm">
+                  {errors.password}
+                </FormControlErrorText>
+              </FormControlError>
+            </FormControl>
+
+            <HStack justifyContent="space-between" alignItems="center">
+              <Checkbox
+                value="rememberMe"
+                isChecked={formData.rememberMe}
+                onChange={(isChecked) => handleChange({ target: { name: 'rememberMe', checked: isChecked, type: 'checkbox' } } as any)}
+                testID="login-remember"
+              >
+                <CheckboxIndicator mr="$2">
+                  <CheckboxIcon as={CheckIcon} />
+                </CheckboxIndicator>
+                <CheckboxLabel>
+                  <Text size="sm" color="$secondary700">Remember me</Text>
+                </CheckboxLabel>
+              </Checkbox>
+              
+              <Button
+                variant="link"
+                size="sm"
+                onPress={() => {
+                  if (onToggleMode) {
+                    // Use onToggleMode to switch to forgot password mode
+                    onToggleMode()
+                  }
+                }}
+              >
+                <ButtonText color="$primary600">Forgot password?</ButtonText>
+              </Button>
+            </HStack>
+
+            <Button
+              variant="solid"
+              size="md"
+              w="$full"
+              isDisabled={state.isLoading}
+              onPress={handleSubmit}
+              testID="login-submit"
+            >
+              {state.isLoading ? (
+                <HStack space="$2" alignItems="center">
+                  <Spinner size="small" color="$white" />
+                  <ButtonText>Signing in...</ButtonText>
+                </HStack>
+              ) : (
+                <ButtonText>Sign In</ButtonText>
+              )}
+            </Button>
+          </VStack>
+
+          {onToggleMode && (
+            <VStack space="$2" alignItems="center">
+              <HStack space="$1" alignItems="center">
+                <Text size="sm" color="$secondary600">
+                  Don't have an account?
+                </Text>
+                <Button
+                  variant="link"
+                  size="sm"
+                  onPress={onToggleMode}
+                  testID="toggle-register"
+                >
+                  <ButtonText color="$primary600" fontWeight="$medium">Sign up here</ButtonText>
+                </Button>
+              </HStack>
+            </VStack>
+          )}
+        </VStack>
+      </Box>
+    </Box>
   )
 }

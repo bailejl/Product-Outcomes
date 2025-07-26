@@ -1,0 +1,15 @@
+{
+  "name": "@product-outcomes/api-core",
+  "version": "1.0.0",
+  "type": "commonjs",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "dependencies": {
+    "express-session": "^1.18.2",
+    "connect-redis": "^9.0.0",
+    "redis": "*"
+  },
+  "devDependencies": {
+    "@types/express-session": "^1.18.2"
+  }
+}

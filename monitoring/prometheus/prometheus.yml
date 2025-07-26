@@ -1,0 +1,64 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    monitor: 'product-outcomes-monitor'
+
+rule_files:
+  - "rules/*.yml"
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          - alertmanager:9093
+
+scrape_configs:
+  # Prometheus itself
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  # Product Outcomes API
+  - job_name: 'product-outcomes-api'
+    metrics_path: '/api/metrics'
+    scrape_interval: 10s
+    static_configs:
+      - targets: ['host.docker.internal:3333']
+    scrape_timeout: 5s
+    honor_labels: true
+
+  # Node Exporter for system metrics
+  - job_name: 'node-exporter'
+    static_configs:
+      - targets: ['node-exporter:9100']
+
+  # PostgreSQL metrics
+  - job_name: 'postgres-exporter'
+    static_configs:
+      - targets: ['postgres-exporter:9187']
+
+  # Redis metrics
+  - job_name: 'redis-exporter'
+    static_configs:
+      - targets: ['redis-exporter:9121']
+
+  # Grafana metrics (self-monitoring)
+  - job_name: 'grafana'
+    static_configs:
+      - targets: ['grafana:3000']
+    metrics_path: '/metrics'
+
+  # Custom business metrics scraping
+  - job_name: 'business-metrics'
+    metrics_path: '/api/business-metrics'
+    scrape_interval: 30s
+    static_configs:
+      - targets: ['host.docker.internal:3333']
+
+  # Health check monitoring
+  - job_name: 'health-checks'
+    metrics_path: '/api/health-metrics'
+    scrape_interval: 30s
+    static_configs:
+      - targets: ['host.docker.internal:3333']

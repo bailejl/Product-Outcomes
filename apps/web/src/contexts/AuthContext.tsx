@@ -132,6 +132,7 @@ class AuthService {
     password: string
     firstName: string
     lastName: string
+    role?: 'admin' | 'user' | 'moderator'
   }) {
     const response = await fetch(`${this.baseURL}/register`, {
       method: 'POST',
@@ -261,6 +262,7 @@ interface AuthContextType {
     password: string
     firstName: string
     lastName: string
+    role?: 'admin' | 'user' | 'moderator'
   }) => Promise<void>
   logout: () => Promise<void>
   refreshToken: () => Promise<void>
@@ -362,6 +364,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     password: string
     firstName: string
     lastName: string
+    role?: 'admin' | 'user' | 'moderator'
   }) => {
     try {
       dispatch({ type: 'LOGIN_START' })

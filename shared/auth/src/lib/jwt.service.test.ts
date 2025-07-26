@@ -22,6 +22,7 @@ describe('JwtService', () => {
     role: UserRole.USER,
     isActive: true,
     emailVerified: true,
+    loginAttempts: 0,
     createdAt: new Date('2024-01-01'),
     updatedAt: new Date('2024-01-01'),
   }

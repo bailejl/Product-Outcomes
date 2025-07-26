@@ -1,0 +1,9 @@
+{
+  "name": "@product-outcomes/shared-models",
+  "version": "0.0.1",
+  "type": "commonjs",
+  "dependencies": {
+    "typeorm": "^0.3.25",
+    "reflect-metadata": "^0.2.2"
+  }
+}

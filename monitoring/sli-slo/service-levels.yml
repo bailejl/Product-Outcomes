@@ -1,0 +1,208 @@
+# Service Level Indicators (SLIs) and Service Level Objectives (SLOs)
+# for Product Outcomes application
+
+slis:
+  # API Performance SLIs
+  api_availability:
+    description: "API endpoint availability"
+    type: "availability"
+    query: "up{job='product-outcomes-api'}"
+    
+  api_latency:
+    description: "API response time percentiles"
+    type: "latency"
+    queries:
+      p50: "histogram_quantile(0.50, rate(product_outcomes_http_request_duration_seconds_bucket[5m]))"
+      p95: "histogram_quantile(0.95, rate(product_outcomes_http_request_duration_seconds_bucket[5m]))"
+      p99: "histogram_quantile(0.99, rate(product_outcomes_http_request_duration_seconds_bucket[5m]))"
+    
+  api_error_rate:
+    description: "API error rate"
+    type: "error_rate"
+    query: "rate(product_outcomes_http_requests_total{status_code=~'5..'}[5m]) / rate(product_outcomes_http_requests_total[5m])"
+
+  # GraphQL Performance SLIs
+  graphql_availability:
+    description: "GraphQL endpoint availability"
+    type: "availability"
+    query: "rate(product_outcomes_graphql_operations_total{status='completed'}[5m]) / rate(product_outcomes_graphql_operations_total[5m])"
+    
+  graphql_latency:
+    description: "GraphQL operation latency"
+    type: "latency"
+    queries:
+      p50: "histogram_quantile(0.50, rate(product_outcomes_graphql_operation_duration_seconds_bucket[5m]))"
+      p95: "histogram_quantile(0.95, rate(product_outcomes_graphql_operation_duration_seconds_bucket[5m]))"
+    
+  # Database Performance SLIs
+  database_availability:
+    description: "Database connection availability"
+    type: "availability"
+    query: "product_outcomes_database_connections{status='active'} > 0"
+    
+  database_latency:
+    description: "Database query latency"
+    type: "latency"
+    queries:
+      p50: "histogram_quantile(0.50, rate(product_outcomes_database_query_duration_seconds_bucket[5m]))"
+      p95: "histogram_quantile(0.95, rate(product_outcomes_database_query_duration_seconds_bucket[5m]))"
+
+  # Business SLIs
+  okr_creation_success:
+    description: "OKR creation success rate"
+    type: "success_rate"
+    query: "rate(product_outcomes_okr_creations_total[5m])"
+    
+  user_session_health:
+    description: "User session health"
+    type: "availability"
+    query: "product_outcomes_user_sessions_active > 0"
+
+slos:
+  # Critical SLOs (99.9% uptime)
+  api_critical_availability:
+    description: "API must be available 99.9% of the time"
+    sli: "api_availability"
+    target: 0.999
+    period: "30d"
+    error_budget: 0.001
+    
+  api_critical_latency:
+    description: "95% of API requests must complete within 500ms"
+    sli: "api_latency.p95"
+    target: 0.5
+    period: "30d"
+    
+  # Important SLOs (99.5% uptime)
+  graphql_availability:
+    description: "GraphQL must be available 99.5% of the time"
+    sli: "graphql_availability"
+    target: 0.995
+    period: "30d"
+    error_budget: 0.005
+    
+  database_availability:
+    description: "Database must be available 99.5% of the time"
+    sli: "database_availability"
+    target: 0.995
+    period: "30d"
+    
+  # Performance SLOs
+  api_latency_p50:
+    description: "50% of API requests must complete within 100ms"
+    sli: "api_latency.p50"
+    target: 0.1
+    period: "7d"
+    
+  api_error_rate:
+    description: "API error rate must be less than 1%"
+    sli: "api_error_rate"
+    target: 0.01
+    period: "7d"
+    
+  database_latency:
+    description: "95% of database queries must complete within 200ms"
+    sli: "database_latency.p95"
+    target: 0.2
+    period: "7d"
+    
+  # Business SLOs
+  okr_creation_availability:
+    description: "OKR creation must be available 99% of the time"
+    sli: "okr_creation_success"
+    target: 0.99
+    period: "7d"
+
+# User Journey SLOs
+user_journeys:
+  user_registration:
+    description: "Complete user registration flow"
+    steps:
+      - name: "visit_signup_page"
+        sli: "api_latency.p95"
+        target: 1.0
+      - name: "submit_registration"
+        sli: "api_error_rate"
+        target: 0.02
+      - name: "email_verification"
+        target: 0.95
+    overall_target: 0.95
+    
+  okr_creation:
+    description: "Create a new OKR"
+    steps:
+      - name: "load_okr_form"
+        sli: "api_latency.p95"
+        target: 0.8
+      - name: "submit_okr"
+        sli: "api_error_rate"
+        target: 0.01
+      - name: "save_okr"
+        sli: "database_latency.p95"
+        target: 0.3
+    overall_target: 0.98
+    
+  okr_dashboard_load:
+    description: "Load OKR dashboard"
+    steps:
+      - name: "authenticate_user"
+        sli: "api_latency.p50"
+        target: 0.2
+      - name: "fetch_okrs"
+        sli: "graphql_latency.p95"
+        target: 1.0
+      - name: "render_dashboard"
+        target: 0.99
+    overall_target: 0.97
+
+# Error Budget Policies
+error_budget_policies:
+  critical_services:
+    - api_critical_availability
+    - api_critical_latency
+    actions:
+      - threshold: 0.5  # 50% error budget consumed
+        action: "alert_team"
+      - threshold: 0.8  # 80% error budget consumed
+        action: "page_oncall"
+      - threshold: 1.0  # 100% error budget consumed
+        action: "halt_deployments"
+        
+  important_services:
+    - graphql_availability
+    - database_availability
+    actions:
+      - threshold: 0.7  # 70% error budget consumed
+        action: "alert_team"
+      - threshold: 1.0  # 100% error budget consumed
+        action: "page_oncall"
+
+# Alerting Rules for SLO Violations
+alerting_rules:
+  - name: "SLO Burn Rate"
+    rules:
+      - alert: "HighBurnRate"
+        expr: |
+          (
+            rate(product_outcomes_http_requests_total{status_code=~"5.."}[1h]) /
+            rate(product_outcomes_http_requests_total[1h])
+          ) > 0.01
+        for: "2m"
+        labels:
+          severity: "critical"
+        annotations:
+          summary: "High error rate burn"
+          description: "Error rate is consuming error budget rapidly"
+          
+      - alert: "MediumBurnRate"
+        expr: |
+          (
+            rate(product_outcomes_http_requests_total{status_code=~"5.."}[6h]) /
+            rate(product_outcomes_http_requests_total[6h])
+          ) > 0.005
+        for: "15m"
+        labels:
+          severity: "warning"
+        annotations:
+          summary: "Medium error rate burn"
+          description: "Error rate is consuming error budget"

@@ -9,9 +9,14 @@ export interface User {
   role: UserRole
   isActive: boolean
   emailVerified: boolean
+  emailVerificationToken?: string
+  passwordResetToken?: string
+  passwordResetExpires?: Date
+  lastLoginAt?: Date
+  loginAttempts: number
+  lockedUntil?: Date
   createdAt: Date
   updatedAt: Date
-  lastLoginAt?: Date
 }
 
 export enum UserRole {

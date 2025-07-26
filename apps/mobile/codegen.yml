@@ -1,0 +1,44 @@
+overwrite: true
+schema: "http://localhost:3333/graphql"
+documents: "src/graphql/**/*.{ts,tsx,graphql,gql}"
+generates:
+  src/types/generated.ts:
+    plugins:
+      - "typescript"
+      - "typescript-operations"
+      - "typescript-react-apollo"
+    config:
+      withHooks: true
+      withComponent: false
+      withHOC: false
+      skipTypename: false
+      enumsAsTypes: true
+      constEnums: true
+      namingConvention:
+        typeNames: pascal-case#pascalCase
+        enumValues: keep
+      scalars:
+        DateTime: string
+        JSON: any
+        Upload: any
+      avoidOptionals:
+        field: true
+        inputValue: false
+        object: false
+        defaultValue: false
+      declarationKind: interface
+      addDocBlocks: true
+      arrayInputCoercion: false
+      onlyOperationTypes: false
+      preResolveTypes: true
+      skipDocumentsValidation: true
+      immutableTypes: false
+      operationResultSuffix: ""
+      dedupeOperationSuffix: true
+      omitOperationSuffix: false
+      gqlImport: "@apollo/client#gql"
+      apolloReactCommonImportFrom: "@apollo/client"
+      apolloReactHooksImportFrom: "@apollo/client"
+hooks:
+  afterOneFileWrite:
+    - prettier --write

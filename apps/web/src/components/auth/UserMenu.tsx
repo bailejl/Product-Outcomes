@@ -1,5 +1,22 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { useAuth } from '../../contexts/AuthContext'
+import {
+  Box,
+  VStack,
+  HStack,
+  Text,
+  Button,
+  ButtonText,
+  Avatar,
+  AvatarBadge,
+  AvatarFallbackText,
+  Menu,
+  MenuItem,
+  MenuItemLabel,
+  Pressable,
+  Divider,
+} from '@gluestack-ui/themed'
+import { ChevronDownIcon, UserIcon, SettingsIcon, LogOutIcon } from '@gluestack-ui/themed'
 
 export function UserMenu() {
   const { state, logout } = useAuth()
@@ -41,6 +58,30 @@ export function UserMenu() {
   }
 
   const userInitials = `${state.user.firstName[0] || ''}${state.user.lastName[0] || ''}`.toUpperCase() || state.user.email[0].toUpperCase()
+  
+  const getRoleDisplayName = (role: string) => {
+    switch (role) {
+      case 'admin':
+        return 'Administrator'
+      case 'moderator':
+        return 'Moderator'
+      case 'user':
+      default:
+        return 'User'
+    }
+  }
+
+  const getRoleBadgeColor = (role: string) => {
+    switch (role) {
+      case 'admin':
+        return '$error500'
+      case 'moderator':
+        return '$warning500'
+      case 'user':
+      default:
+        return '$primary500'
+    }
+  }
 
   const handleKeyDown = (event: React.KeyboardEvent) => {
     if (event.key === 'Enter' || event.key === ' ') {
@@ -50,82 +91,165 @@ export function UserMenu() {
   }
 
   return (
-    <div className="relative" ref={menuRef}>
-      <button
-        onClick={() => setIsOpen(!isOpen)}
+    <Box position="relative" ref={menuRef}>
+      <Pressable
+        onPress={() => setIsOpen(!isOpen)}
         onKeyDown={handleKeyDown}
-        className="flex items-center space-x-2 p-2 rounded-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
-        data-testid="user-menu"
+        borderRadius="$md"
+        p="$2"
+        _hover={{
+          bg: '$secondary100',
+        }}
+        _focus={{
+          bg: '$secondary100',
+          borderColor: '$primary500',
+          borderWidth: 2,
+        }}
+        testID="user-menu"
+        accessibilityRole="button"
         aria-haspopup="true"
         aria-expanded={isOpen}
       >
-        <div className="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-medium">
-          {userInitials}
-        </div>
-        <span className="text-sm font-medium text-gray-700">
-          {state.user.firstName} {state.user.lastName}
-        </span>
-        <svg
-          className={`w-4 h-4 text-gray-400 transition-transform ${
-            isOpen ? 'rotate-180' : ''
-          }`}
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M19 9l-7 7-7-7"
+        <HStack space="$2" alignItems="center">
+          <Avatar size="sm" bg={getRoleBadgeColor(state.user.role)}>
+            <AvatarFallbackText fontWeight="$medium" color="$white">
+              {userInitials}
+            </AvatarFallbackText>
+            <AvatarBadge bg={getRoleBadgeColor(state.user.role)} borderColor="$white" borderWidth={2} />
+          </Avatar>
+          
+          <VStack space="$0">
+            <Text size="sm" fontWeight="$medium" color="$secondary700">
+              {state.user.firstName} {state.user.lastName}
+            </Text>
+            <Text size="xs" color="$secondary500">
+              {getRoleDisplayName(state.user.role)}
+            </Text>
+          </VStack>
+          
+          <ChevronDownIcon 
+            size="sm" 
+            color="$secondary400" 
+            style={{
+              transform: isOpen ? [{ rotate: '180deg' }] : [{ rotate: '0deg' }],
+              transition: 'transform 200ms ease',
+            }}
           />
-        </svg>
-      </button>
+        </HStack>
+      </Pressable>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 border border-gray-200">
-          <div className="px-4 py-2 border-b border-gray-100">
-            <p className="text-sm font-medium text-gray-900">
-              {state.user.firstName} {state.user.lastName}
-            </p>
-            <p className="text-sm text-gray-500">{state.user.email}</p>
-          </div>
+        <Box
+          position="absolute"
+          right={0}
+          top="$full"
+          mt="$2"
+          w="$48"
+          bg="$white"
+          borderRadius="$md"
+          shadowColor="$black"
+          shadowOffset={{ width: 0, height: 4 }}
+          shadowOpacity={0.1}
+          shadowRadius={8}
+          borderColor="$secondary200"
+          borderWidth={1}
+          py="$1"
+          zIndex={50}
+        >
+          <VStack space="$0">
+            <Box px="$4" py="$2" borderBottomColor="$secondary100" borderBottomWidth={1}>
+              <VStack space="$1">
+                <Text size="sm" fontWeight="$medium" color="$secondary900">
+                  {state.user.firstName} {state.user.lastName}
+                </Text>
+                <Text size="sm" color="$secondary500">
+                  {state.user.email}
+                </Text>
+                <HStack space="$2" alignItems="center">
+                  <Box
+                    bg={getRoleBadgeColor(state.user.role)}
+                    px="$2"
+                    py="$1"
+                    borderRadius="$full"
+                  >
+                    <Text size="xs" color="$white" fontWeight="$medium">
+                      {getRoleDisplayName(state.user.role)}
+                    </Text>
+                  </Box>
+                  {state.user.emailVerified && (
+                    <Box bg="$success500" px="$2" py="$1" borderRadius="$full">
+                      <Text size="xs" color="$white" fontWeight="$medium">
+                        Verified
+                      </Text>
+                    </Box>
+                  )}
+                </HStack>
+              </VStack>
+            </Box>
 
-          <button
-            onClick={() => {
-              setIsOpen(false)
-              // TODO: Implement profile view
-              console.log('View profile clicked')
-            }}
-            className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
-            data-testid="user-menu-profile"
-          >
-            View Profile
-          </button>
-
-          <button
-            onClick={() => {
-              setIsOpen(false)
-              // TODO: Implement settings
-              console.log('Settings clicked')
-            }}
-            className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
-            data-testid="user-menu-settings"
-          >
-            Settings
-          </button>
-
-          <div className="border-t border-gray-100">
-            <button
-              onClick={handleLogout}
-              className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
-              data-testid="user-menu-logout"
+            <Pressable
+              onPress={() => {
+                setIsOpen(false)
+                // TODO: Implement profile view
+                console.log('View profile clicked')
+              }}
+              px="$4"
+              py="$2"
+              _hover={{
+                bg: '$secondary50',
+              }}
+              testID="user-menu-profile"
             >
-              Sign Out
-            </button>
-          </div>
-        </div>
+              <HStack space="$3" alignItems="center">
+                <UserIcon size="sm" color="$secondary700" />
+                <Text size="sm" color="$secondary700">
+                  View Profile
+                </Text>
+              </HStack>
+            </Pressable>
+
+            <Pressable
+              onPress={() => {
+                setIsOpen(false)
+                // TODO: Implement settings
+                console.log('Settings clicked')
+              }}
+              px="$4"
+              py="$2"
+              _hover={{
+                bg: '$secondary50',
+              }}
+              testID="user-menu-settings"
+            >
+              <HStack space="$3" alignItems="center">
+                <SettingsIcon size="sm" color="$secondary700" />
+                <Text size="sm" color="$secondary700">
+                  Settings
+                </Text>
+              </HStack>
+            </Pressable>
+
+            <Divider my="$1" />
+
+            <Pressable
+              onPress={handleLogout}
+              px="$4"
+              py="$2"
+              _hover={{
+                bg: '$error50',
+              }}
+              testID="user-menu-logout"
+            >
+              <HStack space="$3" alignItems="center">
+                <LogOutIcon size="sm" color="$error600" />
+                <Text size="sm" color="$error600">
+                  Sign Out
+                </Text>
+              </HStack>
+            </Pressable>
+          </VStack>
+        </Box>
       )}
-    </div>
+    </Box>
   )
 }
