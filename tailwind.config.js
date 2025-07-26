@@ -1,9 +1,9 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
-    "./apps/web/src/**/*.{js,jsx,ts,tsx}",
-    "./apps/web/index.html",
-    "./libs/ui/src/**/*.{js,jsx,ts,tsx}",
+    './apps/web/src/**/*.{js,jsx,ts,tsx}',
+    './apps/web/index.html',
+    './libs/ui/src/**/*.{js,jsx,ts,tsx}',
   ],
   theme: {
     extend: {
@@ -19,11 +19,9 @@ module.exports = {
           500: '#64748b',
           600: '#475569',
           700: '#334155',
-        }
-      }
+        },
+      },
     },
   },
-  plugins: [
-    require('@tailwindcss/typography'),
-  ],
+  plugins: [require('@tailwindcss/typography')],
 }

@@ -1,11 +1,11 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 @theme {
   --color-primary-50: #eff6ff;
   --color-primary-500: #3b82f6;
   --color-primary-600: #2563eb;
   --color-primary-700: #1d4ed8;
-  
+
   --color-secondary-50: #f8fafc;
   --color-secondary-200: #e2e8f0;
   --color-secondary-300: #cbd5e1;
@@ -20,15 +20,15 @@
   body {
     @apply bg-gray-50 text-gray-900;
   }
-  
+
   h1 {
     @apply text-3xl font-bold text-gray-900;
   }
-  
+
   h2 {
     @apply text-2xl font-semibold text-gray-800;
   }
-  
+
   p {
     @apply text-gray-700;
   }
@@ -39,15 +39,15 @@
   .btn-primary {
     @apply px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors duration-200;
   }
-  
+
   .btn-secondary {
     @apply px-4 py-2 bg-secondary-200 text-secondary-800 rounded-lg hover:bg-secondary-300 transition-colors duration-200;
   }
-  
+
   .card {
     @apply bg-white rounded-lg shadow-md p-6 border border-gray-200;
   }
-  
+
   .input-field {
     @apply w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent;
   }

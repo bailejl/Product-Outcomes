@@ -15,9 +15,10 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@product-outcomes/ui": ["libs/ui/src/index.ts"],
       "@product-outcomes/database": ["shared/database/src/index.ts"],
-      "@product-outcomes/types": ["shared/types/src/index.ts"]
+      "@product-outcomes/types": ["shared/types/src/index.ts"],
+      "@product-outcomes/ui": ["libs/ui/src/index.ts"],
+      "@product-outcomes/auth": ["shared/auth/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

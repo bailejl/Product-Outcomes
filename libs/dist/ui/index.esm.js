@@ -3145,7 +3145,7 @@ function HelloWorld() {
       })]
     });
   }
-  // Success state  
+  // Success state
   return jsxs("div", {
     className: "space-y-6",
     children: [jsxs("div", {

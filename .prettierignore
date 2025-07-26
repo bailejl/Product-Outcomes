@@ -11,3 +11,14 @@ test-results/
 features/step-definitions/
 *.html
 .claude/settings.local.json
+tmp/
+.hive-mind/
+.npm/
+.nx/
+.roo/
+.swarm/
+.vscode/
+coordination/
+coverage/
+megalinter-reports/
+memory/

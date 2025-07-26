@@ -100,7 +100,6 @@ app centric repositories which are used mainly for developing applications and p
 - **Performance**: Optimized for large-scale data operations
 - **Backup**: Automated backup and recovery systems
 
-
 ### ML Capabilities
 
 - **Pattern Recognition**: Identifies trends in organizational data

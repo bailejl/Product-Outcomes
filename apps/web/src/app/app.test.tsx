@@ -21,7 +21,7 @@ describe('App Component', () => {
   it('should render the header description', () => {
     render(<App />)
     const description = screen.getByText(
-      'Cross-platform Hello World application with database integration'
+      'Cross-platform Hello World application with authentication & database integration'
     )
     expect(description).toBeInTheDocument()
   })
@@ -37,5 +37,20 @@ describe('App Component', () => {
     expect(screen.getByText('React 19')).toBeInTheDocument()
     expect(screen.getByText('Express.js')).toBeInTheDocument()
     expect(screen.getByText('PostgreSQL')).toBeInTheDocument()
+    expect(screen.getByText('JWT Auth')).toBeInTheDocument()
+  })
+
+  it('should render authentication buttons when not logged in', () => {
+    render(<App />)
+    const signInButton = screen.getByTestId('header-login')
+    const signUpButton = screen.getByTestId('header-register')
+    expect(signInButton).toBeInTheDocument()
+    expect(signUpButton).toBeInTheDocument()
+  })
+
+  it('should render authentication demo info when not logged in', () => {
+    render(<App />)
+    const authInfo = screen.getByText('Authentication Demo')
+    expect(authInfo).toBeInTheDocument()
   })
 })

@@ -4,7 +4,6 @@ This is a comprehensive guide to help you get the most from Nx using CLI command
 
 **CRITICAL**: Do not manually change Nx files and folders. Use MCP first, then Nx CLI commands, and if not possible, reconsider your approach.
 
-
 # General Guidelines
 
 - When answering questions, use the nx_workspace tool first to gain an understanding of the workspace architecture

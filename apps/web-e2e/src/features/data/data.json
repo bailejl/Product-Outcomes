@@ -16,6 +16,36 @@
     }
   },
   {
+    "name": "John Doe",
+    "aliases": [
+      "John Doe w/ valid account",
+      "John Doe has an account",
+      "John Doe is logged in"
+    ],
+    "firstName": "John",
+    "lastName": "Doe",
+    "email": "john.doe@example.com",
+    "password": "SecurePass123",
+    "username": "john_doe",
+    "role": "user"
+  },
+  {
+    "name": "Jane Admin",
+    "aliases": ["Jane Admin w/ admin access"],
+    "firstName": "Jane",
+    "lastName": "Admin",
+    "email": "jane.admin@example.com",
+    "password": "AdminPass123",
+    "username": "jane_admin",
+    "role": "admin"
+  },
+  {
+    "name": "Invalid User",
+    "aliases": ["Invalid User w/ wrong credentials"],
+    "email": "wrong@example.com",
+    "password": "WrongPass123"
+  },
+  {
     "name": "Hello World Messages",
     "success": "Hello World from the Database!",
     "error": "Failed to load message",

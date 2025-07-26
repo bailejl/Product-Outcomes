@@ -1,6 +1,7 @@
-import 'reflect-metadata';
-import { DataSource } from 'typeorm';
-import { Message } from './entities/message';
+import 'reflect-metadata'
+import { DataSource } from 'typeorm'
+import { Message } from './entities/message'
+import { User } from './entities/user'
 
 export const AppDataSource = new DataSource({
   type: 'postgres',
@@ -11,25 +12,25 @@ export const AppDataSource = new DataSource({
   database: process.env.DB_NAME || 'product_outcomes',
   synchronize: process.env.NODE_ENV === 'development',
   logging: process.env.NODE_ENV === 'development',
-  entities: [Message],
+  entities: [Message, User],
   migrations: ['src/migrations/*.ts'],
   subscribers: ['src/subscribers/*.ts'],
-});
+})
 
 export async function initializeDatabase() {
   try {
-    await AppDataSource.initialize();
-    console.log('✅ Database connection established');
-    return AppDataSource;
+    await AppDataSource.initialize()
+    console.log('✅ Database connection established')
+    return AppDataSource
   } catch (error) {
-    console.error('❌ Database connection failed:', error);
-    throw error;
+    console.error('❌ Database connection failed:', error)
+    throw error
   }
 }
 
 export async function closeDatabaseConnection() {
   if (AppDataSource.isInitialized) {
-    await AppDataSource.destroy();
-    console.log('✅ Database connection closed');
+    await AppDataSource.destroy()
+    console.log('✅ Database connection closed')
   }
 }
