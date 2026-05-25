@@ -1,11 +1,28 @@
-# Product Outcomes - Hello World Demo
+# Product Outcomes
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Node.js](https://img.shields.io/badge/Node.js-24-green.svg)](https://nodejs.org/)
-[![React](https://img.shields.io/badge/React-19-blue.svg)](https://reactjs.org/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.8-blue.svg)](https://www.typescriptlang.org/)
+**Reference architecture for AI-augmented full-stack delivery with
+BDD acceptance gates.** A working monorepo that demonstrates how a
+modern product team would actually wire planning, development, and
+acceptance testing together when AI is in the loop.
 
-A full-stack Hello World application demonstrating cross-platform development with modern enterprise-grade architecture. This project showcases a complete technology stack implementation using Nx monorepo, functional programming patterns, and comprehensive testing strategies.
+## Why this exists
+
+Most monorepo starters show you the *layout*. This one shows you the
+*delivery flow*:
+
+- **Specs as the source of truth** — Concise Declarative Gherkin
+  scenarios that double as acceptance gates and as prompts for AI-assisted
+  feature implementation
+- **Functional-programming patterns** — arrow functions, factory
+  patterns, no classes — chosen because they read cleanly under
+  AI-assisted refactoring
+- **Cross-platform from day one** — Web + mobile-ready, single API
+- **Production hygiene baked in** — health checks, graceful DB
+  fallbacks, error handling, typed everywhere
+
+The point isn't that any of these techniques is novel. The point is
+that they compose into a delivery substrate where AI agents can do
+real work without breaking the build.
 
 ## 🎯 What's Inside
 
